@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package readingdata;
+package readingData;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -236,8 +236,30 @@ public class MNISTDatabase
         float data[][] = new float[rows][columns];
 
         for (int i=0; i<rows; i++)
-                for (int j=0; j<rows; j++)
-                        data[i][j] = (float)image[i][j] / 255f;
+            for (int j=0; j<rows; j++)
+                data[i][j] = (float)image[i][j] / 255f;
+
+        return data;
+    }
+    
+    /**
+     * Function to normalize the pixels of an image and returns an array.
+     * @param image the pixels of the image.
+     * @return the normalized pixels of the image in an array.
+     */
+    public static float[] normalizeArray (int image[][])
+    {
+        int rows = image.length;
+        int columns = image[0].length;
+        float data[] = new float[rows*columns];
+        int dataIndex = 0;
+
+        for (int i=0; i<rows; i++) {
+            for (int j=0; j<rows; j++) {
+                data[dataIndex] = (float)image[i][j] / 255f;
+                dataIndex++;
+            }
+        }
 
         return data;
     }
