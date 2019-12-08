@@ -5,7 +5,11 @@
  */
 package nns;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -44,16 +48,27 @@ public class SimpleNN {
      * will be its inputs.
      */
     private double outputs[][];
+    /**
+     * Test predictions.
+     */
+    private ArrayList<Integer> testPredictions;
+    /**
+     * Learning rate.
+     */
+    private double LEARNING_RATE;
     
     /**
      * Constructor of a simple neuronal network.
+     * @param rate current learning rate.
      */
-    public SimpleNN() {
+    public SimpleNN(double rate) {
         outputs = new double[N_LAYERS][];
         outputs[INPUT_LAYER_INDEX] = new double[INPUT_LAYER_SIZE];
         outputs[OUTPUT_LAYER_INDEX] = new double[OUTPUT_LAYER_SIZE];
         weights = new double[OUTPUT_LAYER_SIZE][INPUT_LAYER_SIZE];
         initializeWeights();
+        LEARNING_RATE=rate;
+        testPredictions = new ArrayList();
     }
     /**
      * Initialize the weights of the output layer.
@@ -96,6 +111,23 @@ public class SimpleNN {
         }
     }
     /**
+     * Gets the test predictions to write them in a file. If the neuron of the
+     * current label is activated then it will be the prediction. If it's not,
+     * whatever neuron which is activated will be the prediction.
+     * @param label current label of the test image.
+     */
+    private void getTestPredictions(int label) {
+        if (outputs[OUTPUT_LAYER_INDEX][label] == 1.0) testPredictions.add(label);
+        else {
+            for (int out=0; out<OUTPUT_LAYER_SIZE; out++) {
+                if (outputs[OUTPUT_LAYER_INDEX][out] == 1.0) {
+                    testPredictions.add(out);
+                    break;
+                }
+            }
+        }
+    }
+    /**
      * Update the weights of the output layer with the lineal function.
      * @param label the current digit of the training image.
      */
@@ -104,20 +136,30 @@ public class SimpleNN {
             // It should have been activated but it isn't.
             if (outputs[OUTPUT_LAYER_INDEX][out] == 0.0 && out == label) {
                 for (int w=0; w<weights[out].length; w++) {
-                    weights[out][w] += (outputs[INPUT_LAYER_INDEX][w]);
+                    weights[out][w] += (LEARNING_RATE*outputs[INPUT_LAYER_INDEX][w]);
                 }
             }
             // It shouldn't have been activated but it is.
             else if (outputs[OUTPUT_LAYER_INDEX][out] == 1.0 && out != label) {
                 for (int w=0; w<weights[out].length; w++) {
-                    weights[out][w] += ((-1)*outputs[INPUT_LAYER_INDEX][w]);
+                    weights[out][w] += (LEARNING_RATE*(-1)*outputs[INPUT_LAYER_INDEX][w]);
                 }
             }
         }
     }
-    
+    /**
+     * Train simple neural network with Perceptron algorithm. It tests the
+     * NN every 5 epochs.
+     * @param trainingImages normalized training images.
+     * @param trainingLabels labels of the training images.
+     * @param times training epochs.
+     * @param testImages normalized test images.
+     * @param testLabels labels of the test images.
+     * @param test true to train the nn each 5 epochs, false to not do it.
+     * @throws java.io.IOException
+     */
     public void train(float trainingImages[][][], int trainingLabels[], int times, 
-        float testImages[][][], int testLabels[]) {
+        float testImages[][][], int testLabels[], boolean test) throws IOException {
         double error;
         DecimalFormat d = new DecimalFormat(".###");
         for (int time=1; time<=times; time++) {
@@ -129,26 +171,40 @@ public class SimpleNN {
                 // Prediction
                 if (outputs[OUTPUT_LAYER_INDEX][trainingLabels[image]] == 0.0) error++;
             }
-            System.out.println("Time "+time+" / Training rate error: "
-                +d.format(error / trainingImages.length * 100.0)+"%");
-            if (time % 5 == 0) test(testImages, testLabels);
+            if (test && time % 5 == 0) test(testImages, testLabels);
+            else if (!test) System.out.println(d.format(error / trainingImages.length * 100.0));
         }
     }
     /**
-     * Test method.
+     * Test the NN.
      * @param images normalized pixels of the test images.
      * @param labels the labels of the test images.
+     * @throws java.io.IOException
      */
-    public void test(float images[][][], int labels[]) {
+    public void test(float images[][][], int labels[]) throws IOException {
         double error;
         DecimalFormat d = new DecimalFormat(".###");
         error = 0.0;
         for (int image=0; image<images.length; image++) {
             setOutputsFromImages(images[image]);
             getOutputs();
+            getTestPredictions(labels[image]);
             // Prediction
             if (outputs[OUTPUT_LAYER_INDEX][labels[image]] == 0.0) error++;
         }
-        System.out.println("Test rate error: "+d.format(error / images.length * 100.0)+"%");
+        System.out.println(d.format(error / images.length * 100.0));
+        writeTestResults();
     }
+    /**
+     * Writes the test labels got from the test method.
+     * @throws IOException 
+     */
+    private void writeTestResults() throws IOException {
+        System.out.println("Writing label predictions in ./resultados/perceptron_test.txt");
+        Writer wr = new FileWriter("./resultados/perceptron_test.txt");
+        for (Integer prediction: testPredictions) {
+            wr.write(Integer.toString(prediction));
+        }
+        wr.close();
+    } 
 }

@@ -6,7 +6,7 @@
 package nns;
 
 /**
- * Class which represents a multilayer neural network with one hidden layer.
+ * Class which represents a multilayer neural network with 2 hidden layers.
  * 
  * @author Lidia Sánchez Mérida
  */
@@ -17,37 +17,45 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MultilayerNN {
+public class MultilayerNN2HiddenLayers {
 
     /**
      * Number of layers.
      */
-    private static final int N_LAYERS = 3;
+    private static final int N_LAYERS = 4;
     /**
      * Index of the input layer. It'll be the first layer.
      */
     private static final int INPUT_LAYER_INDEX = 0;
     /**
-     * Index of the hidden layer. It'll be the second layer.
+     * Index of the first hidden layer. It'll be the second layer.
      */
-    private static final int HIDDEN_LAYER_INDEX = 1;
+    private static final int HIDDEN_LAYER1_INDEX = 1;
+    /**
+     * Index of the second hidden layer. It'll be the third layer.
+     */
+    private static final int HIDDEN_LAYER2_INDEX = 2;
     /**
      * Index of the output layer. It'll be the last layer.
      */
-    private static final int OUTPUT_LAYER_INDEX = 2;
+    private static final int OUTPUT_LAYER_INDEX = 3;
     /**
      * Number of layers which has weights. They will be the hidden and the output
      * layer.
      */
-    private static final int N_LAYERS_WEIGHTS = 2;
+    private static final int N_LAYERS_WEIGHTS = 3;
     /**
-     * Index of the weights of the hidden layer.
+     * Index of the weights of the first hidden layer.
      */
-    private static final int HIDDEN_WEIGHT_INDEX = 0;
+    private static final int HIDDEN1_WEIGHT_INDEX = 0;
+    /**
+     * Index of the weights of the second hidden layer.
+     */
+    private static final int HIDDEN2_WEIGHT_INDEX = 1;
     /**
      * Index of the weights of the output lyaer.
      */
-    private static final int OUTPUT_WEIGHT_INDEX = 1;
+    private static final int OUTPUT_WEIGHT_INDEX = 2;
 
     /**
      * Size of the input layer.
@@ -67,12 +75,12 @@ public class MultilayerNN {
     /**
      * Learning rate.
      */
-    private static double LEARNING_RATE;
+    private static final double LEARNING_RATE = 0.07;
 
     /**
      * Momentum.
      */
-    private static double MOMENTUM;
+    private static final double MOMENTUM = 0.7;
 
     /**
      * Outputs of each layer.
@@ -99,10 +107,7 @@ public class MultilayerNN {
      * added to the current weights.
      */
     private double[][][] correctionWeights;
-    /**
-     * Mask for the drop out method.
-     */
-    private double[] mask;
+    
     /**
      * Test predictions.
      */
@@ -110,22 +115,17 @@ public class MultilayerNN {
 
     /**
      * Constructor.
-     * @param learningRate current learning rate.
-     * @param nHiddenNeurons current number of neurons in the hidden layer.
-     * @param momentum current momentum.
+     * @param nHiddenNeurons current hidden layers size.
      */
-    public MultilayerNN(double learningRate, int nHiddenNeurons, double momentum) {
-        // Arguments
-        LEARNING_RATE = learningRate;
+    public MultilayerNN2HiddenLayers(int nHiddenNeurons) {
         HIDDEN_LAYER_SIZE = nHiddenNeurons;
-        MOMENTUM = momentum;
         // Test predictions
         testPredictions = new ArrayList();
-        
         // Initialize outputs array.
         outputs = new double[N_LAYERS][];   // Outputs of the 3 layers.
         outputs[INPUT_LAYER_INDEX] = new double[INPUT_LAYER_SIZE]; 
-        outputs[HIDDEN_LAYER_INDEX] = new double[HIDDEN_LAYER_SIZE]; 
+        outputs[HIDDEN_LAYER1_INDEX] = new double[HIDDEN_LAYER_SIZE]; 
+        outputs[HIDDEN_LAYER2_INDEX] = new double[HIDDEN_LAYER_SIZE]; 
         outputs[OUTPUT_LAYER_INDEX] = new double[OUTPUT_LAYER_SIZE]; 
         // Initialize weights array.
         initializeWeights();
@@ -133,21 +133,26 @@ public class MultilayerNN {
         outputErrors = new double[OUTPUT_LAYER_SIZE];
         // Initialize deltas array.
         deltas = new double[N_LAYERS_WEIGHTS][];
-        deltas[HIDDEN_WEIGHT_INDEX] = new double[HIDDEN_LAYER_SIZE];
+        deltas[HIDDEN1_WEIGHT_INDEX] = new double[HIDDEN_LAYER_SIZE];
+        deltas[HIDDEN2_WEIGHT_INDEX] = new double[HIDDEN_LAYER_SIZE];
         deltas[OUTPUT_WEIGHT_INDEX] = new double[OUTPUT_LAYER_SIZE];
         // Initializing the future corrections of the weights.
         initializeCorrectionWeights();
     }
-    
     /**
      * Initialize the array of weights of the hidden and the output layer.
      */
     private void initializeWeights() {
         weights = new double[N_LAYERS_WEIGHTS][][];
-        // Hidden layer.
-        weights[HIDDEN_WEIGHT_INDEX] = new double[HIDDEN_LAYER_SIZE][];
+        // Hidden layer 1.
+        weights[HIDDEN1_WEIGHT_INDEX] = new double[HIDDEN_LAYER_SIZE][];
         for (int h=0; h<HIDDEN_LAYER_SIZE; h++) {
-            weights[HIDDEN_WEIGHT_INDEX][h] = new double[INPUT_LAYER_SIZE];
+            weights[HIDDEN1_WEIGHT_INDEX][h] = new double[INPUT_LAYER_SIZE];
+        }
+        // Hidden layer 2.
+        weights[HIDDEN2_WEIGHT_INDEX] = new double[HIDDEN_LAYER_SIZE][];
+        for (int h=0; h<HIDDEN_LAYER_SIZE; h++) {
+            weights[HIDDEN2_WEIGHT_INDEX][h] = new double[HIDDEN_LAYER_SIZE];
         }
         // Output layer.
         weights[OUTPUT_WEIGHT_INDEX] = new double[OUTPUT_LAYER_SIZE][];
@@ -173,10 +178,15 @@ public class MultilayerNN {
      */
     private void initializeCorrectionWeights() {
         correctionWeights = new double[N_LAYERS_WEIGHTS][][];
-        // Hidden layer.
-        correctionWeights[HIDDEN_WEIGHT_INDEX] = new double[HIDDEN_LAYER_SIZE][];
+        // Hidden layer 1.
+        correctionWeights[HIDDEN1_WEIGHT_INDEX] = new double[HIDDEN_LAYER_SIZE][];
         for (int h=0; h<HIDDEN_LAYER_SIZE; h++) {
-            correctionWeights[HIDDEN_WEIGHT_INDEX][h] = new double[INPUT_LAYER_SIZE];
+            correctionWeights[HIDDEN1_WEIGHT_INDEX][h] = new double[INPUT_LAYER_SIZE];
+        }
+        // Hidden layer 2.
+        correctionWeights[HIDDEN2_WEIGHT_INDEX] = new double[HIDDEN_LAYER_SIZE][];
+        for (int h=0; h<HIDDEN_LAYER_SIZE; h++) {
+            correctionWeights[HIDDEN2_WEIGHT_INDEX][h] = new double[HIDDEN_LAYER_SIZE];
         }
         // Output layer.
         correctionWeights[OUTPUT_WEIGHT_INDEX] = new double[OUTPUT_LAYER_SIZE][];
@@ -206,29 +216,6 @@ public class MultilayerNN {
         }   
     }
     /**
-     * Feed forward with inverted drop out method.
-     */
-    private void feedForwardDropOut() {
-        double p = 0.5;
-        mask = new double[HIDDEN_LAYER_SIZE];
-        for (int i=0; i<mask.length; i++) {
-            if (i%2 == 0) mask[i] = 0.0/p;
-            else mask[i] = 1.0/p;
-        }
-        for (int layer=1; layer<N_LAYERS; layer++) {
-            for (int i=0; i<outputs[layer].length; i++) {
-                double sum = weights[layer - 1][i][0];
-                for (int j=0; j<outputs[layer - 1].length; j++) {
-                    if (layer == HIDDEN_LAYER_INDEX) 
-                        sum += weights[layer - 1][i][j] * outputs[layer - 1][j] *mask[i];
-                    else
-                        sum += weights[layer - 1][i][j] * outputs[layer - 1][j];
-                }
-                outputs[layer][i] = (1.0 / (1.0 + Math.exp(-sum)));
-            }
-        }
-    }
-    /**
      * Calculates the outputs of the output layer through every layer of the
      * neural network. The first layer has no weights and its outputs are its
      * inputs.
@@ -236,7 +223,7 @@ public class MultilayerNN {
     private void feedForward() {
         for (int layer=1; layer<N_LAYERS; layer++) {
             for (int i=0; i<outputs[layer].length; i++) {
-                double sum = weights[layer - 1][i][0];
+                double sum = weights[layer - 1][i][0]/2;
                 for (int j=0; j<outputs[layer - 1].length; j++) {
                     sum += weights[layer-1][i][j] * outputs[layer - 1][j];
                 }
@@ -261,10 +248,10 @@ public class MultilayerNN {
     private void backwardOutputLayer() {
         for (int o=0; o<OUTPUT_LAYER_SIZE; o++) {
             deltas[OUTPUT_WEIGHT_INDEX][o] = outputErrors[o] * outputs[OUTPUT_LAYER_INDEX][o]
-                * (1 - outputs[OUTPUT_LAYER_INDEX][o]);
+                    * (1 - outputs[OUTPUT_LAYER_INDEX][o]);
             for (int h=0; h<HIDDEN_LAYER_SIZE; h++) {
                 correctionWeights[OUTPUT_WEIGHT_INDEX][o][h] = (LEARNING_RATE * deltas[OUTPUT_WEIGHT_INDEX][o]
-                    * outputs[HIDDEN_LAYER_INDEX][h]) + (MOMENTUM * correctionWeights[OUTPUT_WEIGHT_INDEX][o][h]);
+                    * outputs[HIDDEN_LAYER2_INDEX][h]) + (MOMENTUM * correctionWeights[OUTPUT_WEIGHT_INDEX][o][h]);
                 weights[OUTPUT_WEIGHT_INDEX][o][h] += correctionWeights[OUTPUT_WEIGHT_INDEX][o][h];
             }
         }
@@ -279,46 +266,25 @@ public class MultilayerNN {
             for (int j=0; j<OUTPUT_LAYER_SIZE; j++) {
                 sum += deltas[OUTPUT_WEIGHT_INDEX][j] * weights[OUTPUT_WEIGHT_INDEX][j][h];
             }
-            deltas[HIDDEN_WEIGHT_INDEX][h] = sum * outputs[HIDDEN_LAYER_INDEX][h]
-                * (1 - (outputs[HIDDEN_LAYER_INDEX][h]));
-            for (int i=0; i<INPUT_LAYER_SIZE; i++) {
-                correctionWeights[HIDDEN_WEIGHT_INDEX][h][i] = (LEARNING_RATE * deltas[HIDDEN_WEIGHT_INDEX][h]
-                    * outputs[INPUT_LAYER_INDEX][i]) + (MOMENTUM * correctionWeights[HIDDEN_WEIGHT_INDEX][h][i]);
-                weights[HIDDEN_WEIGHT_INDEX][h][i] += (correctionWeights[HIDDEN_WEIGHT_INDEX][h][i]);
+            deltas[HIDDEN2_WEIGHT_INDEX][h] = sum * outputs[HIDDEN_LAYER2_INDEX][h]
+                * (1 - (outputs[HIDDEN_LAYER2_INDEX][h]));
+            for (int i=0; i<HIDDEN_LAYER_SIZE; i++) {
+                correctionWeights[HIDDEN2_WEIGHT_INDEX][h][i] = (LEARNING_RATE * deltas[HIDDEN2_WEIGHT_INDEX][h]
+                    * outputs[HIDDEN_LAYER1_INDEX][i]) + (MOMENTUM * correctionWeights[HIDDEN2_WEIGHT_INDEX][h][i]);
+                weights[HIDDEN2_WEIGHT_INDEX][h][i] += (correctionWeights[HIDDEN2_WEIGHT_INDEX][h][i]);
             }
         }
-    }
-    /**
-     * Backpropagation to update the weights of the output layer through 
-     * the previous layer, which is the hidden layer. 
-     */
-    private void backwardOutputLayerDropOut() {
-        for (int o=0; o<OUTPUT_LAYER_SIZE; o++) {
-            deltas[OUTPUT_WEIGHT_INDEX][o] = outputErrors[o] * outputs[OUTPUT_LAYER_INDEX][o]
-                * (1 - outputs[OUTPUT_LAYER_INDEX][o]);
-            for (int h=0; h<HIDDEN_LAYER_SIZE; h++) {
-                correctionWeights[OUTPUT_WEIGHT_INDEX][o][h] = (LEARNING_RATE * deltas[OUTPUT_WEIGHT_INDEX][o]
-                    * outputs[HIDDEN_LAYER_INDEX][h]*(1/1-0.5)*mask[h]) + (MOMENTUM * correctionWeights[OUTPUT_WEIGHT_INDEX][o][h]);
-                weights[OUTPUT_WEIGHT_INDEX][o][h] += correctionWeights[OUTPUT_WEIGHT_INDEX][o][h];
-            }
-        }
-    }
-    /**
-     * Backpropagation to update the weights of the hidden layer through the errors
-     * of the output layer and its inputs.
-     */
-    private void backwardHiddenLayerDropOut() {
         for (int h=0; h<HIDDEN_LAYER_SIZE; h++) {
             double sum = 0;
-            for (int j=0; j<OUTPUT_LAYER_SIZE; j++) {
-                sum += deltas[OUTPUT_WEIGHT_INDEX][j] * weights[OUTPUT_WEIGHT_INDEX][j][h];
+            for (int j=0; j<HIDDEN_LAYER_SIZE; j++) {
+                sum += deltas[HIDDEN2_WEIGHT_INDEX][j] * weights[HIDDEN2_WEIGHT_INDEX][j][h];
             }
-            deltas[HIDDEN_WEIGHT_INDEX][h] = sum * outputs[HIDDEN_LAYER_INDEX][h]*(1/1-0.5)*mask[h]
-                * (1 - (outputs[HIDDEN_LAYER_INDEX][h]*(1/1-0.5)*mask[h]));
+            deltas[HIDDEN1_WEIGHT_INDEX][h] = sum * outputs[HIDDEN_LAYER1_INDEX][h]
+                * (1 - (outputs[HIDDEN_LAYER1_INDEX][h]));
             for (int i=0; i<INPUT_LAYER_SIZE; i++) {
-                correctionWeights[HIDDEN_WEIGHT_INDEX][h][i] = (LEARNING_RATE * deltas[HIDDEN_WEIGHT_INDEX][h]
-                    * outputs[INPUT_LAYER_INDEX][i]) + (MOMENTUM * correctionWeights[HIDDEN_WEIGHT_INDEX][h][i]);
-                weights[HIDDEN_WEIGHT_INDEX][h][i] += (correctionWeights[HIDDEN_WEIGHT_INDEX][h][i]);
+                correctionWeights[HIDDEN1_WEIGHT_INDEX][h][i] = (LEARNING_RATE * deltas[HIDDEN1_WEIGHT_INDEX][h]
+                    * outputs[INPUT_LAYER_INDEX][i]) + (MOMENTUM * correctionWeights[HIDDEN1_WEIGHT_INDEX][h][i]);
+                weights[HIDDEN1_WEIGHT_INDEX][h][i] += (correctionWeights[HIDDEN1_WEIGHT_INDEX][h][i]);
             }
         }
     }
@@ -326,16 +292,10 @@ public class MultilayerNN {
      * Backpropagation algorithm.
      * @param label the current digit.
      */
-    private void backPropagation(int label, boolean dropOut) {
+    private void backPropagation(int label) {
         getOutputErrors(label);
-        if (dropOut) {
-            backwardOutputLayerDropOut();
-            backwardHiddenLayerDropOut();
-        }
-        else {
-            backwardOutputLayer();
-            backwardHiddenLayer();
-        }
+        backwardOutputLayer();
+        backwardHiddenLayer();
     }
     /**
      * Get the current prediction of the outputs of the output layer. In order
@@ -354,30 +314,28 @@ public class MultilayerNN {
         return maxNeuron;
     }
     /**
-     * Train the multilayer NN. It tests it every 5 epochs.
+     * Train the multilayer NN with 2 hidden layers. It tests it every 5 epochs.
      * @param trainingImages normalized training images.
      * @param trainingLabels labels of the training images.
      * @param times training epochs.
      * @param testImages normalized test images.
      * @param testLabels labels of the test images.
-     * @param dropOut true if inverted drop out will be applied, false if it's not.
      * @param test true to test the nn each 5 epochs, false to not do it.
      * @throws java.io.IOException
      */
     public void train(float trainingImages[][][], int trainingLabels[], int times, 
-        float testImages[][][], int testLabels[], boolean dropOut, boolean test) throws IOException {
+        float testImages[][][], int testLabels[], boolean test) throws IOException {
         DecimalFormat d = new DecimalFormat(".###");
         double error;
         for (int time=1; time<=times; time++) {
             error = 0.0;
-            for (int image=0; image<trainingImages.length; image++) {
+            for (int image=0; image< trainingImages.length; image++) {
                 setOutputsFromImages(trainingImages[image]);
-                if (dropOut) feedForwardDropOut();
-                else feedForward();
-                backPropagation(trainingLabels[image], dropOut);
+                feedForward();
+                backPropagation(trainingLabels[image]);
                 if (getPrediction() != trainingLabels[image]) error++;
             }
-            if (test && time % 5 == 0) test(testImages, testLabels, dropOut);
+            if (test && time % 5 == 0) test(testImages, testLabels);
             else if (!test) System.out.println(d.format(error / trainingImages.length * 100.0));
         }
     }
@@ -385,10 +343,9 @@ public class MultilayerNN {
      * Test the multilayer neural network trained with the test images.
      * @param images pixels of the test images.
      * @param labels labels of the test images.
-     * @param dropOut true if dropout is activated, false if it's not.
      * @throws java.io.IOException
      */
-    public void test(float[][][] images, int[] labels, boolean dropOut) throws IOException {
+    public void test(float[][][] images, int[] labels) throws IOException {
         double error = 0.0f;
         DecimalFormat d = new DecimalFormat(".###");
         int currentPrediction = 0;
@@ -400,20 +357,19 @@ public class MultilayerNN {
             if (currentPrediction != labels[image]) error++;
         }
         System.out.println(d.format(error / images.length * 100.0));
-        writeTestResults(dropOut);
+        writeTestResults();
     }
     /**
      * Writes the test labels got from the test method.
      * @throws IOException 
      */
-    private void writeTestResults(boolean dropOut) throws IOException {
-        String fichero = "./resultados/backpropagation_test.txt";
-        if (dropOut) fichero = "./resultados/backpropagation_dropout_test.txt";
+    private void writeTestResults() throws IOException {
+        String fichero = "./resultados/backpropagation_two_test.txt";
         System.out.println("Writing label predictions in "+ fichero);
         Writer wr = new FileWriter(fichero);
         for (Integer prediction: testPredictions) {
             wr.write(Integer.toString(prediction));
         }
         wr.close();
-    } 
+    }
 }
