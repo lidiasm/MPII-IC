@@ -73,13 +73,14 @@ public class Chromosome {
             permutation[i] = newRandomNumber;
             usedRandom.add(newRandomNumber);
         }
+        calculateFitness();
     }
     /**
      * Calculates the cost of the current solution. It has to be minimum.
-     * @param flows material flows of each installation.
-     * @param distances distance between two installations.
      */
-    public void calculateFitness(int[][] flows, int[][] distances) {
+    public void calculateFitness() {
+        int[][] flows = DataReader.getFlows();
+        int[][] distances = DataReader.getDistances();
         if (flows.length == distances.length) {
             for (int i=0; i<flows.length; i++) {
                 for (int j=0; j<flows.length; j++) {
@@ -87,6 +88,16 @@ public class Chromosome {
                 }
             }
         }
+    }
+    /**
+     * Exchanges the elements of two different position of the permutation.
+     * @param pos1 first position to exchange.
+     * @param pos2 second position to exchange.
+     */
+    public void mutateOperator(int pos1, int pos2) {
+        int swap = permutation[pos1];
+        permutation[pos1] = permutation[pos2];
+        permutation[pos2] = swap;
     }
     /**
      * Shows the permutation and its fitness.

@@ -17,15 +17,15 @@ public class DataReader {
     /**
      * Number of installations.
      */
-    private int nInstallations;
+    private static int nInstallations;
     /**
      * Material flows.
      */
-    private int flows[][];
+    private static int flows[][];
     /**
      * Distances between installations.
      */
-    private int distances[][];
+    private static int distances[][];
     
     /**
      * Constructor.
@@ -37,21 +37,21 @@ public class DataReader {
      * Gets the number of installations.
      * @return number of installations.
      */
-    public int getNInstallations() {
+    public static int getNInstallations() {
         return nInstallations;
     }
     /**
      * Gets material flows of each installation.
      * @return every material flows.
      */
-    public int[][] getFlows() {
+    public static int[][] getFlows() {
         return flows;
     }
     /**
      * Gets the distances of each installation.
      * @return every distance of each installation.
      */
-    public int[][] getDistances() {
+    public static int[][] getDistances() {
         return distances;
     }
     /**
@@ -60,7 +60,7 @@ public class DataReader {
      * @param f data file.
      * @throws FileNotFoundException 
      */
-    public void readData(File f) throws FileNotFoundException {
+    public static void readData(File f) throws FileNotFoundException {
         Scanner sc = new Scanner(f);
         nInstallations = sc.nextInt();
         flows = new int[nInstallations][nInstallations];
@@ -77,11 +77,10 @@ public class DataReader {
         }
     }
     /**
-     * Shows the read data.
+     * Shows the read file.
      * @return 
      */
-    @Override
-    public String toString() {
+    public static String printFile() {
         String result = "\nNumber of installations: "+nInstallations+"\nMaterial flows\n";
         String flowsString = "", distancesString = "";
         for (int i=0; i<nInstallations; i++) {
