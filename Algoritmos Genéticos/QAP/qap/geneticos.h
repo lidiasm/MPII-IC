@@ -7,7 +7,7 @@
 class AlgoritmoGenetico
 {
 public:
-    vector<Solucion> poblacion;
+    vector<Cromosoma> poblacion;
     DatosFichero datos;
     float probabilidadCruce;
     float probabilidadMutacion;
@@ -19,26 +19,26 @@ public:
 
     int tamPoblacion; //numero de individuos en la población
 
-    void ordenarPoblacion(vector<Solucion>&pobl);
+    void ordenarPoblacion(vector<Cromosoma>&pobl);
 
     AlgoritmoGenetico(DatosFichero &dat, float probCruce, float probMutacion, int n, float pls);
 
-    Solucion AlgoritmoGeneracional_Posicional();
-    Solucion AlgoritmoEstacionario_Posicional();
+    Cromosoma AlgoritmoGeneracional_Posicional();
+    Cromosoma AlgoritmoEstacionario_Posicional();
 
-    Solucion AlgoritmoGeneracional_OX();
-    Solucion AlgoritmoEstacionario_OX();
+    Cromosoma AlgoritmoGeneracional_OX();
+    Cromosoma AlgoritmoEstacionario_OX();
 
-    //Solucion AlgoritmoMemetico();
+    //Cromosoma AlgoritmoMemetico();
 
     //Función para selección
     int seleccionTorneoBinario();
 
     //Funciones para operadores de cruce
-    Solucion OperadorCrucePosicion(Solucion padre1, Solucion padre2);
-    Solucion OperadorCruceOX(Solucion padre1, Solucion padre2);
+    Cromosoma OperadorCrucePosicion(Cromosoma padre1, Cromosoma padre2);
+    Cromosoma OperadorCruceOX(Cromosoma padre1, Cromosoma padre2);
     //Función para mutación
-    void Mutacion(vector<Solucion> & poblacionMutar);
+    void Mutacion(vector<Cromosoma> & poblacionMutar);
 };
 
 #endif // ALGORITMOGENETICO_H

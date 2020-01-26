@@ -11,28 +11,28 @@ int main(int argc, char *argv[])
 
     //Establecer semilla
     int semilla = atoi(argv[2]);
-    Solucion cambiarSemilla(semilla);
+    Cromosoma cambiarSemilla(semilla);
     //for (int semilla=1; semilla<=30; semilla++) {
       //----------------------------------------------------------------------------------------------------
-      cambiarSemilla = Solucion(semilla);
+      cambiarSemilla = Cromosoma(semilla);
       AlgoritmoGenetico generacionalPosicional(datos,0.7,0.001,50,0);
-      Solucion sol_generacionalPosicional = generacionalPosicional.AlgoritmoGeneracional_Posicional();
+      Cromosoma sol_generacionalPosicional = generacionalPosicional.AlgoritmoGeneracional_Posicional();
       cout << endl << "AGG POSICION:" << endl;
       for(int i=0; i<datos.nInstalaciones ; i++){
-          cout << sol_generacionalPosicional.permutacion[i] << " ";
+          cout << sol_generacionalPosicional.solucion[i] << " ";
       }
       cout << endl;
-      cout << "Coste de la solución: " << sol_generacionalPosicional.coste << endl;
+      cout << "fitness de la solución: " << sol_generacionalPosicional.fitness << endl;
       //----------------------------------------------------------------------------------------------------
-      cambiarSemilla = Solucion(semilla);
+      cambiarSemilla = Cromosoma(semilla);
       AlgoritmoGenetico generacionalOX(datos,0.7,0.001,50,0);
-      Solucion sol_generacionalOX = generacionalOX.AlgoritmoGeneracional_OX();
+      Cromosoma sol_generacionalOX = generacionalOX.AlgoritmoGeneracional_OX();
       cout << endl << "AGG OX:" << endl;
       for(int i=0; i<datos.nInstalaciones ; i++){
-          cout << sol_generacionalOX.permutacion[i] << " ";
+          cout << sol_generacionalOX.solucion[i] << " ";
       }
       cout << endl;
-      cout << "Coste de la solución: " << sol_generacionalOX.coste << endl;
+      cout << "fitness de la solución: " << sol_generacionalOX.fitness << endl;
     //}
 
     return 0;

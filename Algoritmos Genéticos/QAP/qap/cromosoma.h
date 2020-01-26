@@ -1,28 +1,22 @@
-#ifndef SOLUCION_H
-#define SOLUCION_H
+#ifndef CROMOSOMA_H
+#define CROMOSOMA_H
 
 #include <vector>
-#include "datosfichero.h"
 #include <algorithm>
+#include "datosfichero.h"
 
 using namespace std;
 
-
-
-class Solucion
-{
+class Cromosoma {
 public:
-    vector<int> permutacion;
-    int coste = 0;
-    Solucion();
-    Solucion(int &semilla);
-    void calcularCoste(DatosFichero &datos);
-    void solucionRandom(DatosFichero &datos);
-    void OperadorIntercambio(int r, int s);
-
-    int ValorAleatorio(int topeInferior, int topeSuperior);
-
-
+    vector<int> solucion;
+    int fitness;
+    Cromosoma();
+    Cromosoma(int &semilla);
+    void CalcularFitness(DatosFichero &datos);
+    void InicializarSolucion(DatosFichero &datos);
+    void IntercambiarGenes(int gen1, int gen2);
+    int GenerarNumeroRandom(int limInf, int limSup);
 };
 
-#endif // SOLUCION_H
+#endif

@@ -1,65 +1,52 @@
 #include "cromosoma.h"
 #include "datosfichero.h"
-
 #include "pseudoaleatorio.h"
 
-Solucion::Solucion()
-{
-    permutacion = vector<int>(0);
-    coste = 0;
+Cromosoma::Cromosoma() {
+  solucion = vector<int>(0);
+  fitness = 0;
 }
-
-Solucion::Solucion(int &semilla)
-{
-    Seed = semilla;
-    cout << "Cambiando semilla a -> " << Seed << endl;
+// Semilla para establecer a la hora de generar los números aleatorios.
+Cromosoma::Cromosoma(int &semilla) {
+  Seed = semilla;
+  solucion = vector<int>(0);
+  fitness = 0;
 }
-
-void Solucion::calcularCoste(DatosFichero &datos)
-{
-    int costo_acumulado=0;
-    for(int i=0; i<datos.nInstalaciones; i++){
-        for(unsigned int j=0; j<permutacion.size(); j++){
-            if(j!=i){
-                costo_acumulado += datos.flujos[i][j]*datos.distancias[permutacion[i]][permutacion[j]];
-            }
-        }
+// Calcular el coste de la solución.
+void Cromosoma::CalcularFitness(DatosFichero &datos) {
+  // Reinicializamos el coste de la solución a 0 para que no se acumule.
+  fitness = 0;
+  for(int i=0; i<datos.nInstalaciones; i++) {
+    for (int j=0; j<solucion.size(); j++) {
+      if (i != j) {
+        fitness += datos.flujos[i][j]*datos.distancias[solucion[i]][solucion[j]];
+      }
     }
-
-    coste=costo_acumulado;
-
+  }
 }
 
-void Solucion::solucionRandom(DatosFichero &datos)
-{
-    permutacion.resize(datos.nInstalaciones,datos.nInstalaciones);
-
-    int cont = 0, random_num;
-    vector<int>::iterator it=permutacion.begin();
-
-    while(cont<datos.nInstalaciones){
-        random_num = Randint(0,datos.nInstalaciones-1);
-        it=find(permutacion.begin(), permutacion.end(), random_num);
-
-        while(it!=permutacion.end()){
-            random_num = Randint(0,datos.nInstalaciones-1);
-            it=find(permutacion.begin(), permutacion.end(), random_num);
-
-        }
-
-        permutacion[cont] = random_num;
-        cont++;
-
+void Cromosoma::InicializarSolucion(DatosFichero &datos) {
+  int numero;
+  // Inicializamos la solución a -1 con el tamaño de los datos actuales
+  solucion.resize(datos.nInstalaciones, -1);
+  for (int i=0; i<datos.nInstalaciones; i++) {
+    numero = Randint(0, datos.nInstalaciones-1);
+    // Sin repetidos
+    while (find(solucion.begin(), solucion.end(), numero) != solucion.end()) {
+      numero = Randint(0, datos.nInstalaciones-1);
     }
-
-    calcularCoste(datos);
+    solucion[i] = numero;
+  }
+  // Evaluamos la nueva solución generada
+  CalcularFitness(datos);
+}
+// Añadimos esta función para generar un entero aleatorio y así no tener que
+// incluir el fichero "pesudoaleatorio.h" y nos de un error relacionado con las
+// múltiples definiciones
+int Cromosoma::GenerarNumeroRandom(int limInf, int limSup) {
+    return Randint(limInf, limSup);
 }
 
-int Solucion::ValorAleatorio(int topeInferior, int topeSuperior){
-    int random_num = Randint(topeInferior,topeSuperior);
-    return random_num;
-}
-
-void Solucion::OperadorIntercambio(int r, int s){
-    swap(permutacion[r],permutacion[s]);
+void Cromosoma::IntercambiarGenes(int gen1, int gen2) {
+    swap(solucion[gen1], solucion[gen2]);
 }
