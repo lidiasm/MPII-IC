@@ -1,44 +1,38 @@
-#ifndef ALGORITMOGENETICO_H
-#define ALGORITMOGENETICO_H
+#ifndef GENETICOS_H
+#define GENETICOS_
 
 #include "cromosoma.h"
 #include "datosfichero.h"
 
-class AlgoritmoGenetico
+class Geneticos
 {
 public:
     vector<Cromosoma> poblacion;
     DatosFichero datos;
-    float probabilidadCruce;
-    float probabilidadMutacion;
-    int nEsperadoCruces;
-    int nEsperadoGenesMutados;
-    float probabilidadPLS;
-    float tiempo;
-    int llamadasFuncionObjetivo; //condición de parada
+    float probCruce;
+    float probMutacion;
+    int crucesARealizar;
+    int genesAMutar;
+    // Lo ponemos como atributo para que cada vez que se llame a la función objetivo
+    // se aumente una unidad. Este es el criterio de parada.
+    int nIteraciones;
 
-    int tamPoblacion; //numero de individuos en la población
+    ////////////////////////////////////////////////////////////////////////////
+    // MÉTODOS
+    Geneticos(DatosFichero &dat, float pC, float pM, int tam);
+    void OrdenarPoblacion(vector<Cromosoma> &pob);
+    // Operador de selección de los padres
+    int TorneoBinario();
+    // Operadores de cruce
+    Cromosoma CrucePosicion(Cromosoma c1, Cromosoma c2);
+    Cromosoma CruceOX(Cromosoma c1, Cromosoma c2);
+    // Operador de mutación
+    void Mutacion(vector<Cromosoma> &pob);
 
-    void ordenarPoblacion(vector<Cromosoma>&pobl);
-
-    AlgoritmoGenetico(DatosFichero &dat, float probCruce, float probMutacion, int n, float pls);
-
-    Cromosoma AlgoritmoGeneracional_Posicional();
-    Cromosoma AlgoritmoEstacionario_Posicional();
-
-    Cromosoma AlgoritmoGeneracional_OX();
-    Cromosoma AlgoritmoEstacionario_OX();
-
-    //Cromosoma AlgoritmoMemetico();
-
-    //Función para selección
-    int seleccionTorneoBinario();
-
-    //Funciones para operadores de cruce
-    Cromosoma OperadorCrucePosicion(Cromosoma padre1, Cromosoma padre2);
-    Cromosoma OperadorCruceOX(Cromosoma padre1, Cromosoma padre2);
-    //Función para mutación
-    void Mutacion(vector<Cromosoma> & poblacionMutar);
+    // ALGORITMO GENERACIONAL CON CRUCE BASADO EN POSICIÓN
+    Cromosoma AGGPosicion(int iteracionesTotal);
+    // ALGORITMO GENERACIONAL CON CRUCE OX
+    Cromosoma AGGOX(int iteracionesTotal);
 };
 
-#endif // ALGORITMOGENETICO_H
+#endif

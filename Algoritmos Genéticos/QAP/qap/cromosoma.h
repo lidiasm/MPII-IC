@@ -11,12 +11,19 @@ class Cromosoma {
 public:
     vector<int> solucion;
     int fitness;
+    
+    ///////////////////////////////////////////////////////////////
+    // CONSTRUCTORES
     Cromosoma();
     Cromosoma(int &semilla);
+
+    //////////////////////////////////////////////////////////////
+    // MÉTODOS
     void CalcularFitness(DatosFichero &datos);
     void InicializarSolucion(DatosFichero &datos);
     void IntercambiarGenes(int gen1, int gen2);
-    int GenerarNumeroRandom(int limInf, int limSup);
+    static int GenerarNumeroRandom(int limInf, int limSup);
+    void ImprimirCromosoma();
 };
 
 #endif

@@ -50,3 +50,12 @@ int Cromosoma::GenerarNumeroRandom(int limInf, int limSup) {
 void Cromosoma::IntercambiarGenes(int gen1, int gen2) {
     swap(solucion[gen1], solucion[gen2]);
 }
+
+void Cromosoma::ImprimirCromosoma() {
+  cout << "Coste: " << fitness << endl;
+  cout << "Solución: ";
+  for (int i=0; i<solucion.size(); i++) {
+    cout << solucion[i] << " ";
+  }
+  cout << endl;
+}

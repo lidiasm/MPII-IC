@@ -14,9 +14,14 @@ public:
   int nInstalaciones;
   vector<vector<int> > flujos;
   vector<vector<int> > distancias;
-
+  
+  ////////////////////////////////////
+  // CONSTRUCTORES
   DatosFichero(char* fichero);
   DatosFichero();
+
+  ///////////////////////////////////
+  // MÉTODOS
   void MostrarDatos();
 };
 
