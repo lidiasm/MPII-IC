@@ -2,7 +2,7 @@
 #include <time.h>
 
 
-AlgoritmoGenetico::AlgoritmoGenetico(Datos &dat, float probCruce, float probMutacion, int n, float pls)
+AlgoritmoGenetico::AlgoritmoGenetico(DatosFichero &dat, float probCruce, float probMutacion, int n, float pls)
 {
     //Obtengo una población de caracter aleatorio de tamaño 50
     poblacion.resize(n);
@@ -21,7 +21,7 @@ AlgoritmoGenetico::AlgoritmoGenetico(Datos &dat, float probCruce, float probMuta
     nEsperadoCruces = probabilidadCruce*(poblacion.size()/2) + 1;
 
 
-    nEsperadoGenesMutados = probabilidadMutacion*(poblacion.size()*datos.n);
+    nEsperadoGenesMutados = probabilidadMutacion*(poblacion.size()*datos.nInstalaciones);
 
 
 
@@ -57,7 +57,7 @@ Solucion AlgoritmoGenetico::AlgoritmoEstacionario_Posicional()
     Solucion hijoObtenido;
     llamadasFuncionObjetivo = 0;
     int generaciones_realizadas = 0 ;
-    int genes = 2*datos.n; //2 por numero de genes
+    int genes = 2*datos.nInstalaciones; //2 por numero de genes
     int cada_cuanto = 1000/genes; //cada cuantas generaciones tienes que mutar los dos hijos
 
 
@@ -310,7 +310,7 @@ Solucion AlgoritmoGenetico::AlgoritmoEstacionario_OX()
     Solucion hijoObtenido;
     llamadasFuncionObjetivo = 0;
     int generaciones_realizadas = 0;
-    int genes = 2*datos.n; //2 por numero de genes
+    int genes = 2*datos.nInstalaciones; //2 por numero de genes
     int cada_cuanto = 1000/genes; //cada cuantas generaciones tienes que mutar los dos hijos
 
     clock_t start,end;
@@ -344,13 +344,13 @@ Solucion AlgoritmoGenetico::AlgoritmoEstacionario_OX()
             generaciones_realizadas = 0;
 
             hijoMutar = hijoObtenido.ValorAleatorio(0,1);
-            genMutar1 = hijoObtenido.ValorAleatorio(0, datos.n-1);
-            genMutar2 = hijoObtenido.ValorAleatorio(0, datos.n-1);
+            genMutar1 = hijoObtenido.ValorAleatorio(0, datos.nInstalaciones-1);
+            genMutar2 = hijoObtenido.ValorAleatorio(0, datos.nInstalaciones-1);
 
             //me aseguro que los genes a cambiar son distintos
             //NO deben coincidir
             while(genMutar1 == genMutar2){
-                genMutar2 = hijoObtenido.ValorAleatorio(0, datos.n-1);
+                genMutar2 = hijoObtenido.ValorAleatorio(0, datos.nInstalaciones-1);
             }
 
             poblacionHijos[hijoMutar].OperadorIntercambio(genMutar1,genMutar2);
@@ -492,13 +492,13 @@ void AlgoritmoGenetico::Mutacion(vector<Solucion> &poblacionMutar){
     for(int i=0; i<nEsperadoGenesMutados; i++){
         llamadasFuncionObjetivo++;
         //3.1 Elegimos aleatoriamente los valores a mutar:
-        genMutar1 = poblacion[0].ValorAleatorio(0, datos.n-1);
-        genMutar2 = poblacion[0].ValorAleatorio(0, datos.n-1);
+        genMutar1 = poblacion[0].ValorAleatorio(0, datos.nInstalaciones-1);
+        genMutar2 = poblacion[0].ValorAleatorio(0, datos.nInstalaciones-1);
 
         //me aseguro que los genes a cambiar son distintos
         //NO deben coincidir
         while(genMutar1 == genMutar2){
-            genMutar2 = poblacion[0].ValorAleatorio(0, datos.n-1);
+            genMutar2 = poblacion[0].ValorAleatorio(0, datos.nInstalaciones-1);
         }
 
         //Elijo aleatoriamente el hijo que va a mutar

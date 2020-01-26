@@ -7,8 +7,8 @@
 class AlgoritmoGenetico
 {
 public:
-    vector<Solucion> poblacionInicial, poblacion;
-    Datos datos;
+    vector<Solucion> poblacion;
+    DatosFichero datos;
     float probabilidadCruce;
     float probabilidadMutacion;
     int nEsperadoCruces;
@@ -21,7 +21,7 @@ public:
 
     void ordenarPoblacion(vector<Solucion>&pobl);
 
-    AlgoritmoGenetico(Datos &dat, float probCruce, float probMutacion, int n, float pls);
+    AlgoritmoGenetico(DatosFichero &dat, float probCruce, float probMutacion, int n, float pls);
 
     Solucion AlgoritmoGeneracional_Posicional();
     Solucion AlgoritmoEstacionario_Posicional();

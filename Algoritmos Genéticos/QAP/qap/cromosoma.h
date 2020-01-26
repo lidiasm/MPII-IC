@@ -16,9 +16,8 @@ public:
     int coste = 0;
     Solucion();
     Solucion(int &semilla);
-    void calcularCoste(Datos &datos);
-    void solucionRandom(Datos &datos);
-    int incrementoCoste(Datos &datos, int &r, int &s);
+    void calcularCoste(DatosFichero &datos);
+    void solucionRandom(DatosFichero &datos);
     void OperadorIntercambio(int r, int s);
 
     int ValorAleatorio(int topeInferior, int topeSuperior);

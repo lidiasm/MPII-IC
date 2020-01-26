@@ -1,28 +1,23 @@
-#ifndef DATOS_H
-#define DATOS_H
-
+#ifndef DATOS_FICHERO
+#define DATOS_FICHERO
 
 #include <iostream>
 #include <vector>
 #include <sstream>
 #include <fstream>
 
-
 using namespace std;
 
-class Datos
-{
+class DatosFichero {
+
 public:
+  int nInstalaciones;
+  vector<vector<int> > flujos;
+  vector<vector<int> > distancias;
 
-    int n; //número de problemas
-
-    vector< vector<int> >f; //matriz flujos
-    vector< vector<int> >d; //matriz distancias
-    vector<int>suma_flujos;
-    vector<int>suma_distancias;
-
-    Datos(char* nombre_fichero);
-    Datos();
+  DatosFichero(char* fichero);
+  DatosFichero();
+  void MostrarDatos();
 };
 
-#endif // DATOS_H
+#endif
