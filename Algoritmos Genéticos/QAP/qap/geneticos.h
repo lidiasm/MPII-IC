@@ -3,6 +3,7 @@
 
 #include "cromosoma.h"
 #include "datosfichero.h"
+#include "busquedalocal.h"
 
 class Geneticos
 {
@@ -30,6 +31,8 @@ public:
     void Mutacion(vector<Cromosoma> &pob);
     void MutacionEstacionarios(vector<Cromosoma> &pob);
 
+    ////////////////////////////////////////////////////////////////////////////
+    // GENÉTICOS
     // ALGORITMO GENERACIONAL CON CRUCE BASADO EN POSICIÓN
     void AGGPosicion(int iteracionesTotal);
     // ALGORITMO GENERACIONAL CON CRUCE OX
@@ -38,6 +41,12 @@ public:
     void AGEPosicion(int iteracionesTotal);
     // ALGORITMO ESTACIONARIO CON CRUCE OX
     void AGEOX(int iteracionesTotal);
+
+    // MEMÉTICOS
+    void MemeticoAGG(int iteracionesTotal, int generacionesBL,
+      bool crucePosicion, string pLS);
+    void MemeticoAGE(int iteracionesTotal, int generacionesBL,
+      bool crucePosicion, string pLS);
 };
 
 #endif

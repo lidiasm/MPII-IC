@@ -331,3 +331,217 @@ void Geneticos::AGEOX(int iteracionesTotal) {
     poblacion[poblacion.size()-2] = hijos[1];
   }
 }
+
+// ALGORITMO MEMÉTICO 1: híbrido entre el Algoritmo Generacional con la Búsqueda Local.
+// Se puede aplicar el operador de cruce basado en posición o el OX.
+void Geneticos::MemeticoAGG(int iteracionesTotal, int generacionesBL,
+  bool crucePosicion, string pLS) {
+  // Inicializamos a 0 el número de llamadas a la función objetivo.
+  nIteraciones = 0;
+  // Contamos las generaciones para aplicar la búsqueda local
+  int nGeneracion = 0;
+
+  while (nIteraciones < iteracionesTotal) {
+    nGeneracion++;
+    vector<Cromosoma> padres, hijos;
+    // Ordenamos la población actual
+    OrdenarPoblacion(poblacion);
+    // Selección de tantos padres como cromosomas haya en la población
+    int padreSeleccionado;
+    for (int i=0; i<poblacion.size(); i++) {
+      padreSeleccionado = TorneoBinario();
+      padres.push_back(poblacion[padreSeleccionado]);
+    }
+    // Cruzamos los padres con el operador de cruce basado en la posición
+    Cromosoma hijo1, hijo2;
+    int padresCruzados = 0;
+    for (int i=0; i<crucesARealizar; i++) {
+      if (crucePosicion) {
+        hijo1 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
+        hijo2 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
+      }
+      else {
+        hijo1 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
+        hijo2 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
+      }
+      hijos.push_back(hijo1);
+      hijos.push_back(hijo2);
+      // Dos padres cruzados
+      padresCruzados += 2;
+      // Dos hijos evaluados
+      nIteraciones += 2;
+    }
+    // Completamos la población con los padres que no se han cruzado
+    for (int i=padresCruzados; i<padres.size(); i++) {
+      hijos.push_back(padres[i]);
+    }
+    // Mutamos la población actual
+    Mutacion(hijos);
+
+    ///////// BÚSQUEDA LOCAL
+    if (nGeneracion == generacionesBL) {
+      nGeneracion = 0;
+      // Búsqueda local sobre la población completa
+      if (pLS == "1.0") {
+        for (int i=0; i<hijos.size(); i++) {
+          BusquedaLocal busquedaL(datos, hijos[i]);
+          busquedaL.BL(400);
+          hijos[i] = busquedaL.solucionBL;
+          nIteraciones += busquedaL.nIteraciones;
+        }
+      }
+      // Búsqueda local sobre el 10% aleatoriamente
+      else if (pLS == "0.1") {
+        vector<Cromosoma> hijosBL;
+        for (int i=0; i<hijos.size()*0.1; i++) {
+          int hijoSeleccionado = Cromosoma::GenerarNumeroRandom(0, hijos.size()-1);
+          hijosBL.push_back(hijos[hijoSeleccionado]);
+        }
+        // BL con los hijos escogidos aleatoriamente
+        for (int i=0; i<hijosBL.size(); i++) {
+          BusquedaLocal busquedaL(datos, hijosBL[i]);
+          busquedaL.BL(400);
+          hijos[i] = busquedaL.solucionBL;
+          nIteraciones += busquedaL.nIteraciones;
+        }
+      }
+      // Búsqueda local sobre el 10% de los mejores
+      else if (pLS == "0.1M") {
+        OrdenarPoblacion(hijos);
+        for (int i=0; i<hijos.size()*0.1; i++) {
+          BusquedaLocal busquedaL(datos, hijos[i]);
+          busquedaL.BL(400);
+          hijos[i] = busquedaL.solucionBL;
+          nIteraciones += busquedaL.nIteraciones;
+        }
+      }
+    }
+
+    // Ordenamos de nuevo la población
+    OrdenarPoblacion(hijos);
+    // Elitismo: el mejor padre debe sobrevivir y se sustituirá por el peor hijo
+    bool mejorPadreEncontrado = false;
+    for (int i=0; i<hijos.size() && !mejorPadreEncontrado; i++) {
+      if (poblacion[0].solucion == hijos[i].solucion) {
+        mejorPadreEncontrado = true;
+      }
+    }
+    if (!mejorPadreEncontrado) {
+      hijos[hijos.size()-1] = poblacion[0];
+    }
+    // Actualizamos la población
+    poblacion = hijos;
+  }
+  // Se ordena la población final
+  OrdenarPoblacion(poblacion);
+}
+
+// ALGORITMO MEMÉTICO 2: híbrido entre el Algoritmo Estacionario con la Búsqueda Local.
+// Se puede aplicar el operador de cruce basado en posición o el OX.
+void Geneticos::MemeticoAGE(int iteracionesTotal, int generacionesBL,
+  bool crucePosicion, string pLS) {
+  // Inicializamos a 0 el número de llamadas a la función objetivo.
+  nIteraciones = 0;
+  // Contamos las generaciones para aplicar la búsqueda local
+  int nGeneracion = 0;
+  // Cada cuántas generaciones vamos a mutar a los hijos
+  int generacionAMutar = 1000/(datos.nInstalaciones*poblacion.size());
+  int nGeneracionMutar = 0;
+  while (nIteraciones < iteracionesTotal) {
+    nGeneracion++;
+    nGeneracionMutar++;
+    vector<Cromosoma> padres, hijos;
+    // Ordenamos la población actual
+    OrdenarPoblacion(poblacion);
+    // Selección de tantos padres como cromosomas haya en la población
+    int padreSeleccionado;
+    for (int i=0; i<poblacion.size(); i++) {
+      padreSeleccionado = TorneoBinario();
+      padres.push_back(poblacion[padreSeleccionado]);
+    }
+    // Cruzamos los padres con el operador de cruce basado en la posición
+    Cromosoma hijo1, hijo2;
+    int padresCruzados = 0;
+    for (int i=0; i<crucesARealizar; i++) {
+      if (crucePosicion) {
+        hijo1 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
+        hijo2 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
+      }
+      else {
+        hijo1 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
+        hijo2 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
+      }
+      hijos.push_back(hijo1);
+      hijos.push_back(hijo2);
+      // Dos padres cruzados
+      padresCruzados += 2;
+      // Dos hijos evaluados
+      nIteraciones += 2;
+    }
+    // Completamos la población con los padres que no se han cruzado
+    for (int i=padresCruzados; i<padres.size(); i++) {
+      hijos.push_back(padres[i]);
+    }
+    // Mutamos la población actual
+    if (nGeneracionMutar == generacionAMutar) {
+      nGeneracionMutar = 0;
+      MutacionEstacionarios(hijos);
+    }
+
+    ///////// BÚSQUEDA LOCAL
+    if (nGeneracion == generacionesBL) {
+      nGeneracion = 0;
+      // Búsqueda local sobre la población completa
+      if (pLS == "1.0") {
+        for (int i=0; i<hijos.size(); i++) {
+          BusquedaLocal busquedaL(datos, hijos[i]);
+          busquedaL.BL(400);
+          hijos[i] = busquedaL.solucionBL;
+          nIteraciones += busquedaL.nIteraciones;
+        }
+      }
+      // Búsqueda local sobre el 10% aleatoriamente
+      else if (pLS == "0.1") {
+        vector<Cromosoma> hijosBL;
+        for (int i=0; i<hijos.size()*0.1; i++) {
+          int hijoSeleccionado = Cromosoma::GenerarNumeroRandom(0, hijos.size()-1);
+          hijosBL.push_back(hijos[hijoSeleccionado]);
+        }
+        // BL con los hijos escogidos aleatoriamente
+        for (int i=0; i<hijosBL.size(); i++) {
+          BusquedaLocal busquedaL(datos, hijosBL[i]);
+          busquedaL.BL(400);
+          hijos[i] = busquedaL.solucionBL;
+          nIteraciones += busquedaL.nIteraciones;
+        }
+      }
+      // Búsqueda local sobre el 10% de los mejores
+      else if (pLS == "0.1M") {
+        OrdenarPoblacion(hijos);
+        for (int i=0; i<hijos.size()*0.1; i++) {
+          BusquedaLocal busquedaL(datos, hijos[i]);
+          busquedaL.BL(400);
+          hijos[i] = busquedaL.solucionBL;
+          nIteraciones += busquedaL.nIteraciones;
+        }
+      }
+    }
+
+    // Ordenamos de nuevo la población
+    OrdenarPoblacion(hijos);
+    // Elitismo: el mejor padre debe sobrevivir y se sustituirá por el peor hijo
+    bool mejorPadreEncontrado = false;
+    for (int i=0; i<hijos.size() && !mejorPadreEncontrado; i++) {
+      if (poblacion[0].solucion == hijos[i].solucion) {
+        mejorPadreEncontrado = true;
+      }
+    }
+    if (!mejorPadreEncontrado) {
+      hijos[hijos.size()-1] = poblacion[0];
+    }
+    // Actualizamos la población
+    poblacion = hijos;
+  }
+  // Se ordena la población final
+  OrdenarPoblacion(poblacion);
+}
