@@ -1,5 +1,6 @@
 #include "datosfichero.h"
 #include "geneticos.h"
+#include "busquedalocal.h"
 
 using namespace std;
 
@@ -54,6 +55,13 @@ int main(int argc, char *argv[]) {
     ageOX.AGEOX(iteraciones);
     cout << endl << "AGE OX: " << endl;
     ageOX.poblacion[0].ImprimirCromosoma();
+
+    /////////////////////////////////////////////////////// BL
+    Cromosoma::SetSemilla(semilla);
+    BusquedaLocal buquedaL(datos);
+    buquedaL.BL(iteraciones);
+    cout << "BL" << endl;
+    buquedaL.solucionBL.ImprimirCromosoma();
   //}
   return 0;
 }

@@ -24,6 +24,22 @@ void Cromosoma::CalcularFitness(DatosFichero &datos) {
   }
 }
 
+// Calcular la diferencia de fitness dadas dos asociaciones de instalaciones.
+// Si el coste es negativo la solución actual es peor que la sugerida
+int Cromosoma::CalcularDiferenciaFitness(DatosFichero &datos, int i1, int i2) {
+  int diferenciaFitness = 0;
+  for (int i=0; i<datos.nInstalaciones; i++) {
+    if (i != i1 && i != i2) {
+      diferenciaFitness +=
+      datos.flujos[i1][i]*(datos.distancias[solucion[i2]][solucion[i]]-datos.distancias[solucion[i1]][solucion[i]]) +
+      datos.flujos[i2][i]*(datos.distancias[solucion[i1]][solucion[i]]-datos.distancias[solucion[i2]][solucion[i]]) +
+      datos.flujos[i][i1]*(datos.distancias[solucion[i]][solucion[i2]]-datos.distancias[solucion[i]][solucion[i1]]) +
+      datos.flujos[i][i2]*(datos.distancias[solucion[i]][solucion[i1]]-datos.distancias[solucion[i]][solucion[i2]]);
+    }
+  }
+  return diferenciaFitness;
+}
+
 void Cromosoma::InicializarSolucion(DatosFichero &datos) {
   int numero;
   // Inicializamos la solución a -1 con el tamaño de los datos actuales

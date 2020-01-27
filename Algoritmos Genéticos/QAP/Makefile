@@ -19,8 +19,11 @@ $(BIN)/cromosoma.o : $(QAP)/cromosoma.h $(QAP)/cromosoma.cpp
 $(BIN)/geneticos.o : $(QAP)/geneticos.h $(QAP)/geneticos.cpp
 	$(CXX) -c -o $(BIN)/geneticos.o $(QAP)/geneticos.cpp
 
+$(BIN)/busquedalocal.o : $(QAP)/busquedalocal.h $(QAP)/busquedalocal.cpp
+	$(CXX) -c -o $(BIN)/busquedalocal.o $(QAP)/busquedalocal.cpp
+
 ###### COMPILACIÓN DE LOS OBJETOS DE LOS MÓDULOS ANTERIORES
-$(BIN)/practica2.o : $(QAP)/datosfichero.h $(QAP)/cromosoma.h $(QAP)/geneticos.h
+$(BIN)/practica2.o : $(QAP)/datosfichero.h $(QAP)/cromosoma.h $(QAP)/geneticos.h $(QAP)/busquedalocal.h
 	$(CXX) -c -o $(BIN)/practica2.o $(QAP)/main.cpp
 
 ###### COMPILACIÓN Y GENERACIÓN DEL EJECUTABLE FINAL
@@ -28,8 +31,8 @@ $(BIN)/qap : $(BIN)/practica2.o $(LIB)/libAlgoritmos.a
 	$(CXX) -o $(BIN)/qap $(BIN)/practica2.o $(LDFLAGS) $(LDLIBS)
 
 ###### LIBRERÍAS
-$(LIB)/libAlgoritmos.a : $(BIN)/datosfichero.o $(BIN)/cromosoma.o $(BIN)/geneticos.o
-	$(AR) rvs $(LIB)/libAlgoritmos.a $(BIN)/datosfichero.o $(BIN)/cromosoma.o $(BIN)/geneticos.o
+$(LIB)/libAlgoritmos.a : $(BIN)/datosfichero.o $(BIN)/cromosoma.o $(BIN)/geneticos.o $(BIN)/busquedalocal.o
+	$(AR) rvs $(LIB)/libAlgoritmos.a $(BIN)/datosfichero.o $(BIN)/cromosoma.o $(BIN)/geneticos.o  $(BIN)/busquedalocal.o
 
 clean:
 	-rm $(BIN)/*.o
