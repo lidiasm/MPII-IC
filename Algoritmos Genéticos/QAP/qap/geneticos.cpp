@@ -129,7 +129,7 @@ void Geneticos::Mutacion(vector<Cromosoma> &pob) {
   }
 }
 
-// Esquema generacional del algoritmo generacional utilizando cruce basado en posición
+// Esquema generacional del Algoritmo Generacional utilizando cruce basado en posición
 Cromosoma Geneticos::AGGPosicion(int iteracionesTotal) {
   // Inicializamos a 0 el número de llamadas a la función objetivo.
   nIteraciones = 0;
@@ -181,7 +181,7 @@ Cromosoma Geneticos::AGGPosicion(int iteracionesTotal) {
   OrdenarPoblacion(poblacion);
 }
 
-// Esquema generacional del algoritmo generacional utilizando cruce OX
+// Esquema generacional del Algoritmo Generacional utilizando cruce OX
 Cromosoma Geneticos::AGGOX(int iteracionesTotal) {
   // Inicializamos a 0 el número de llamadas a la función objetivo.
   nIteraciones = 0;
@@ -231,4 +231,9 @@ Cromosoma Geneticos::AGGOX(int iteracionesTotal) {
   }
   // Se ordena la población final
   OrdenarPoblacion(poblacion);
+}
+
+// Esquema generacional del Algoritmo Estacionario con cruce basado en posición
+Cromosoma Geneticos:.AGEPosicion(int iteracionesTotal) {
+
 }

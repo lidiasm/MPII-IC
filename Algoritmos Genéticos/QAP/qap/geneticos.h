@@ -33,6 +33,8 @@ public:
     Cromosoma AGGPosicion(int iteracionesTotal);
     // ALGORITMO GENERACIONAL CON CRUCE OX
     Cromosoma AGGOX(int iteracionesTotal);
+    // ALGORITMO ESTACIONARIO CON CRUCE BASADO EN POSICIÓN
+    Cromosoma AGEPosicion(int iteracionesTotal);
 };
 
 #endif

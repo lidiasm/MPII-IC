@@ -6,11 +6,10 @@ Cromosoma::Cromosoma() {
   solucion = vector<int>(0);
   fitness = 0;
 }
-// Semilla para establecer a la hora de generar los números aleatorios.
-Cromosoma::Cromosoma(int &semilla) {
+// Método estático para poder establecer una semilla para generar los números
+// aleatorios de forma que los resultados sean reproducibles
+void Cromosoma::SetSemilla(int &semilla) {
   Seed = semilla;
-  solucion = vector<int>(0);
-  fitness = 0;
 }
 // Calcular el coste de la solución.
 void Cromosoma::CalcularFitness(DatosFichero &datos) {
