@@ -26,15 +26,18 @@ public:
     // Operadores de cruce
     Cromosoma CrucePosicion(Cromosoma c1, Cromosoma c2);
     Cromosoma CruceOX(Cromosoma c1, Cromosoma c2);
-    // Operador de mutación
+    // Operadores de mutación
     void Mutacion(vector<Cromosoma> &pob);
+    void MutacionEstacionarios(vector<Cromosoma> &pob);
 
     // ALGORITMO GENERACIONAL CON CRUCE BASADO EN POSICIÓN
-    Cromosoma AGGPosicion(int iteracionesTotal);
+    void AGGPosicion(int iteracionesTotal);
     // ALGORITMO GENERACIONAL CON CRUCE OX
-    Cromosoma AGGOX(int iteracionesTotal);
+    void AGGOX(int iteracionesTotal);
     // ALGORITMO ESTACIONARIO CON CRUCE BASADO EN POSICIÓN
-    Cromosoma AGEPosicion(int iteracionesTotal);
+    void AGEPosicion(int iteracionesTotal);
+    // ALGORITMO ESTACIONARIO CON CRUCE OX
+    void AGEOX(int iteracionesTotal);
 };
 
 #endif

@@ -42,6 +42,18 @@ int main(int argc, char *argv[]) {
     aggOX.AGGOX(iteraciones);
     cout << endl << "AGG OX:" << endl;
     aggOX.poblacion[0].ImprimirCromosoma();
+    /////////////////////////////////////////////////////// AGE POSICIÓN
+    Cromosoma::SetSemilla(semilla);
+    Geneticos agePosicion(datos, probCruceAGG, probMutacion, tamPoblacion);
+    agePosicion.AGEPosicion(iteraciones);
+    cout << endl << "AGE POSICIÓN: " << endl;
+    agePosicion.poblacion[0].ImprimirCromosoma();
+    /////////////////////////////////////////////////////// AGE OX
+    Cromosoma::SetSemilla(semilla);
+    Geneticos ageOX(datos, probCruceAGG, probMutacion, tamPoblacion);
+    ageOX.AGEOX(iteraciones);
+    cout << endl << "AGE OX: " << endl;
+    ageOX.poblacion[0].ImprimirCromosoma();
   //}
   return 0;
 }

@@ -128,9 +128,24 @@ void Geneticos::Mutacion(vector<Cromosoma> &pob) {
     pob[hijoAMutar].CalcularFitness(datos);
   }
 }
+// Operador de mutación para los Algoritmos Genéticos en los que solamente
+// se mutan dos genes de forma aleatoria.
+void Geneticos::MutacionEstacionarios(vector<Cromosoma> &pob) {
+  int gen1, gen2, hijoAMutar;
+  nIteraciones++;
+  gen1 = Cromosoma::GenerarNumeroRandom(0, datos.nInstalaciones-1);
+  gen2 = Cromosoma::GenerarNumeroRandom(0, datos.nInstalaciones-1);
+  while (gen1 == gen2 ) {
+    gen2 = Cromosoma::GenerarNumeroRandom(0, datos.nInstalaciones-1);
+  }
+  // Elegimos al hijo a mutar de forma aleatoria
+  hijoAMutar = Cromosoma::GenerarNumeroRandom(0, pob.size()-1);
+  pob[hijoAMutar].IntercambiarGenes(gen1, gen2);
+  pob[hijoAMutar].CalcularFitness(datos);
+}
 
 // Esquema generacional del Algoritmo Generacional utilizando cruce basado en posición
-Cromosoma Geneticos::AGGPosicion(int iteracionesTotal) {
+void Geneticos::AGGPosicion(int iteracionesTotal) {
   // Inicializamos a 0 el número de llamadas a la función objetivo.
   nIteraciones = 0;
   while (nIteraciones < iteracionesTotal) {
@@ -182,7 +197,7 @@ Cromosoma Geneticos::AGGPosicion(int iteracionesTotal) {
 }
 
 // Esquema generacional del Algoritmo Generacional utilizando cruce OX
-Cromosoma Geneticos::AGGOX(int iteracionesTotal) {
+void Geneticos::AGGOX(int iteracionesTotal) {
   // Inicializamos a 0 el número de llamadas a la función objetivo.
   nIteraciones = 0;
   while (nIteraciones < iteracionesTotal) {
@@ -234,6 +249,85 @@ Cromosoma Geneticos::AGGOX(int iteracionesTotal) {
 }
 
 // Esquema generacional del Algoritmo Estacionario con cruce basado en posición
-Cromosoma Geneticos:.AGEPosicion(int iteracionesTotal) {
+void Geneticos::AGEPosicion(int iteracionesTotal) {
+  // Inicializamos las iteraciones a realizar a 0
+  nIteraciones = 0;
+  // Calculamos cada cuántas generaciones se muta mediante la Esperanza Matemática.
+  // Para ello consideramos la probabilidad de mutación y la suma de los genes de dos cromosomas
+  int generacionAMutar = 1000/(datos.nInstalaciones*2);
+  int nGeneracion = 0;
+  int padre1, padre2;
+  Cromosoma hijo1, hijo2;
 
+  while (nIteraciones < iteracionesTotal) {
+    vector<Cromosoma> hijos;
+    nGeneracion++;
+    // Ordenamos la población
+    OrdenarPoblacion(poblacion);
+    // Elegimos a los dos padres a cruzar mediante torneo binario
+    padre1 = TorneoBinario();
+    padre2 = TorneoBinario();
+    // Los cruzamos obteniendo dos hijos
+    hijo1 = CrucePosicion(poblacion[padre1], poblacion[padre2]);
+    hijos.push_back(hijo1);
+    hijo2 = CrucePosicion(poblacion[padre1], poblacion[padre2]);
+    hijos.push_back(hijo2);
+    nIteraciones += 2;
+    // Mutamos cada X generaciones calculadas
+    if (nGeneracion == generacionAMutar) {
+      nGeneracion = 0;
+      MutacionEstacionarios(hijos);
+    }
+    // Reemplazamiento: incluimos los dos hijos obtenidos por los dos peores padres
+    // si los hijos son mejores.
+    // Para ello introducimos a los cuatro en una población, se ordenan y se introducen
+    // en la población actual los dos mejores
+    hijos.push_back(poblacion[poblacion.size()-1]);
+    hijos.push_back(poblacion[poblacion.size()-2]);
+    OrdenarPoblacion(hijos);
+    poblacion[poblacion.size()-1] = hijos[0];
+    poblacion[poblacion.size()-2] = hijos[1];
+  }
+}
+
+// Esquema generacional del Algoritmo Estacionario con cruce OX
+void Geneticos::AGEOX(int iteracionesTotal) {
+  // Inicializamos las iteraciones a realizar a 0
+  nIteraciones = 0;
+  // Calculamos cada cuántas generaciones se muta mediante la Esperanza Matemática.
+  // Para ello consideramos la probabilidad de mutación y la suma de los genes de dos cromosomas
+  int generacionAMutar = 1000/(datos.nInstalaciones*2);
+  int nGeneracion = 0;
+  int padre1, padre2;
+  Cromosoma hijo1, hijo2;
+
+  while (nIteraciones < iteracionesTotal) {
+    vector<Cromosoma> hijos;
+    nGeneracion++;
+    // Ordenamos la población
+    OrdenarPoblacion(poblacion);
+    // Elegimos a los dos padres a cruzar mediante torneo binario
+    padre1 = TorneoBinario();
+    padre2 = TorneoBinario();
+    // Los cruzamos obteniendo dos hijos
+    hijo1 = CruceOX(poblacion[padre1], poblacion[padre2]);
+    hijos.push_back(hijo1);
+    hijo2 = CruceOX(poblacion[padre1], poblacion[padre2]);
+    hijos.push_back(hijo2);
+    nIteraciones += 2;
+    // Mutamos cada X generaciones calculadas
+    if (nGeneracion == generacionAMutar) {
+      nGeneracion = 0;
+      MutacionEstacionarios(hijos);
+    }
+    // Reemplazamiento: incluimos los dos hijos obtenidos por los dos peores padres
+    // si los hijos son mejores.
+    // Para ello introducimos a los cuatro en una población, se ordenan y se introducen
+    // en la población actual los dos mejores
+    hijos.push_back(poblacion[poblacion.size()-1]);
+    hijos.push_back(poblacion[poblacion.size()-2]);
+    OrdenarPoblacion(hijos);
+    poblacion[poblacion.size()-1] = hijos[0];
+    poblacion[poblacion.size()-2] = hijos[1];
+  }
 }
