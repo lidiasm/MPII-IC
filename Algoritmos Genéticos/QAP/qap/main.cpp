@@ -30,39 +30,39 @@ int main(int argc, char *argv[]) {
   // Leemos el fichero
   char* fichero = argv[1];
   DatosFichero datos(fichero);
-  //for (int semilla=1; semilla<=semillaMax; semilla++) {
-    //cout << endl << "semilla " << semilla << endl;
+  for (int semilla=1; semilla<=semillaMax; semilla++) {
+    cout << endl << "semilla " << semilla << endl;
     /////////////////////////////////////////////////////// BL
-    // Cromosoma::SetSemilla(semilla);
-    // BusquedaLocal buquedaL(datos);
-    // buquedaL.BL(iteraciones);
-    // cout << "BL" << endl;
-    // buquedaL.solucionBL.ImprimirCromosoma();
+    Cromosoma::SetSemilla(semilla);
+    BusquedaLocal buquedaL(datos);
+    buquedaL.BL(iteraciones);
+    cout << "BL" << endl;
+    buquedaL.solucionBL.ImprimirCromosoma();
     // /////////////////////////////////////////////////////// AGG POSICIÓN
-    // Cromosoma::SetSemilla(semilla);
-    // Geneticos aggPosicion(datos, probCruceAGG, probMutacion, tamPoblacion);
-    // aggPosicion.AGGPosicion(iteraciones);
-    // cout << endl << "AGG POSICION:" << endl;
-    // aggPosicion.poblacion[0].ImprimirCromosoma();
-    // /////////////////////////////////////////////////////// AGG OX
-    // Cromosoma::SetSemilla(semilla);
-    // Geneticos aggOX(datos, probCruceAGG, probMutacion, tamPoblacion);
-    // aggOX.AGGOX(iteraciones);
-    // cout << endl << "AGG OX:" << endl;
-    // aggOX.poblacion[0].ImprimirCromosoma();
-    // /////////////////////////////////////////////////////// AGE POSICIÓN
-    // Cromosoma::SetSemilla(semilla);
-    // Geneticos agePosicion(datos, probCruceAGG, probMutacion, tamPoblacion);
-    // agePosicion.AGEPosicion(iteraciones);
-    // cout << endl << "AGE POSICIÓN: " << endl;
-    // agePosicion.poblacion[0].ImprimirCromosoma();
-    // /////////////////////////////////////////////////////// AGE OX
-    // Cromosoma::SetSemilla(semilla);
-    // Geneticos ageOX(datos, probCruceAGG, probMutacion, tamPoblacion);
-    // ageOX.AGEOX(iteraciones);
-    // cout << endl << "AGE OX: " << endl;
-    // ageOX.poblacion[0].ImprimirCromosoma();
-
+  //   Cromosoma::SetSemilla(semilla);
+  //   Geneticos aggPosicion(datos, probCruceAGG, probMutacion, tamPoblacion);
+  //   aggPosicion.AGGPosicion(iteraciones);
+  //   cout << endl << "AGG POSICION:" << endl;
+  //   aggPosicion.poblacion[0].ImprimirCromosoma();
+  //   // /////////////////////////////////////////////////////// AGG OX
+  //   Cromosoma::SetSemilla(semilla);
+  //   Geneticos aggOX(datos, probCruceAGG, probMutacion, tamPoblacion);
+  //   aggOX.AGGOX(iteraciones);
+  //   cout << endl << "AGG OX:" << endl;
+  //   aggOX.poblacion[0].ImprimirCromosoma();
+  //   // /////////////////////////////////////////////////////// AGE POSICIÓN
+  //   Cromosoma::SetSemilla(semilla);
+  //   Geneticos agePosicion(datos, probCruceAGG, probMutacion, tamPoblacion);
+  //   agePosicion.AGEPosicion(iteraciones);
+  //   cout << endl << "AGE POSICIÓN: " << endl;
+  //   agePosicion.poblacion[0].ImprimirCromosoma();
+  //   // /////////////////////////////////////////////////////// AGE OX
+  //   Cromosoma::SetSemilla(semilla);
+  //   Geneticos ageOX(datos, probCruceAGG, probMutacion, tamPoblacion);
+  //   ageOX.AGEOX(iteraciones);
+  //   cout << endl << "AGE OX: " << endl;
+  //   ageOX.poblacion[0].ImprimirCromosoma();
+  // }
     ////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////// MEMÉTICO AGG POSICIÓN
     // Cromosoma::SetSemilla(semilla);
@@ -82,9 +82,9 @@ int main(int argc, char *argv[]) {
     // memeticoMejoresAGGP.MemeticoAGG(iteraciones, generacionMemetico, true, "0.1M");
     // cout << endl << "MEMÉTICO 10% MEJORES AGG POSICIÓN" << endl;
     // memeticoMejoresAGGP.poblacion[0].ImprimirCromosoma();
-
-    //////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////// MEMÉTICO AGG OX
+    //
+    // //////////////////////////////////////////////////////////////////////////////
+    // ///////////////////////////////////// MEMÉTICO AGG OX
     // Cromosoma::SetSemilla(semilla);
     // Geneticos memeticoTotalAGGOX(datos, probCruceAGG, probMutacion, tamPoblacion);
     // memeticoTotalAGGOX.MemeticoAGG(iteraciones, generacionMemetico, false, "1.0");
@@ -102,9 +102,9 @@ int main(int argc, char *argv[]) {
     // memeticoMejoresAGGOX.MemeticoAGG(iteraciones, generacionMemetico, false, "0.1M");
     // cout << endl << "MEMÉTICO 10% MEJORES AGG OX" << endl;
     // memeticoMejoresAGGOX.poblacion[0].ImprimirCromosoma();
-
-    //////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////// MEMÉTICO AGE POSICIÓN
+    //
+    // //////////////////////////////////////////////////////////////////////////////
+    // ///////////////////////////////////// MEMÉTICO AGE POSICIÓN
     // Cromosoma::SetSemilla(semilla);
     // Geneticos memeticoTotalAGEP(datos, probCruceAGG, probMutacion, tamPoblacion);
     // memeticoTotalAGEP.MemeticoAGE(iteraciones, generacionMemetico, true, "1.0");
@@ -122,9 +122,9 @@ int main(int argc, char *argv[]) {
     // memeticoMejoresAGEP.MemeticoAGE(iteraciones, generacionMemetico, true, "1.0M");
     // cout << endl << "MEMÉTICO 10% MEJORES AGE POSICIÓN" << endl;
     // memeticoMejoresAGEP.poblacion[0].ImprimirCromosoma();
-
-    //////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////// MEMÉTICO AGE OX
+    //
+    // //////////////////////////////////////////////////////////////////////////////
+    // ///////////////////////////////////// MEMÉTICO AGE OX
     // Cromosoma::SetSemilla(semilla);
     // Geneticos memeticoTotalAGEOX(datos, probCruceAGG, probMutacion, tamPoblacion);
     // memeticoTotalAGEOX.MemeticoAGE(iteraciones, generacionMemetico, false, "1.0");
@@ -143,6 +143,25 @@ int main(int argc, char *argv[]) {
     // cout << endl << "MEMÉTICO 10% MEJORES AGE OX" << endl;
     // memeticoMejoresAGEOX.poblacion[0].ImprimirCromosoma();
 
+    ///////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////// MEMÉTICO ORIGINAL
+    // Cromosoma::SetSemilla(semilla);
+    // Geneticos memeticoCompleto(datos, probCruceAGG, probMutacion, tamPoblacion);
+    // memeticoCompleto.Memetico(iteraciones, generacionMemetico, "1.0");
+    // cout << endl << "MEMÉTICO STANDARD COMPLETO" << endl;
+    // memeticoCompleto.poblacion[0].ImprimirCromosoma();
+    //
+    // Cromosoma::SetSemilla(semilla);
+    // Geneticos memeticoRandom(datos, probCruceAGG, probMutacion, tamPoblacion);
+    // memeticoRandom.Memetico(iteraciones, generacionMemetico, "0.1");
+    // cout << endl << "MEMÉTICO STANDARD RANDOM" << endl;
+    // memeticoRandom.poblacion[0].ImprimirCromosoma();
+    //
+    // Cromosoma::SetSemilla(semilla);
+    // Geneticos memeticoMejores(datos, probCruceAGG, probMutacion, tamPoblacion);
+    // memeticoMejores.Memetico(iteraciones, generacionMemetico, "0.1M");
+    // cout << endl << "MEMÉTICO STANDARD MEJORES" << endl;
+    // memeticoMejores.poblacion[0].ImprimirCromosoma();
   }
   return 0;
 }
