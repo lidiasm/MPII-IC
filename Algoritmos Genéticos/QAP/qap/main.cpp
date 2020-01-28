@@ -1,6 +1,7 @@
 #include "datosfichero.h"
 #include "geneticos.h"
 #include "busquedalocal.h"
+#include "greedy.h"
 
 using namespace std;
 
@@ -30,14 +31,17 @@ int main(int argc, char *argv[]) {
   // Leemos el fichero
   char* fichero = argv[1];
   DatosFichero datos(fichero);
-  for (int semilla=1; semilla<=semillaMax; semilla++) {
-    cout << endl << "semilla " << semilla << endl;
-    /////////////////////////////////////////////////////// BL
-    Cromosoma::SetSemilla(semilla);
-    BusquedaLocal buquedaL(datos);
-    buquedaL.BL(iteraciones);
-    cout << "BL" << endl;
-    buquedaL.solucionBL.ImprimirCromosoma();
+  Greedy greedy(datos);
+  cout << "GREEDY" << endl;
+  greedy.solucionGreedy.ImprimirCromosoma();
+  // for (int semilla=1; semilla<=semillaMax; semilla++) {
+  //   cout << endl << "semilla " << semilla << endl;
+  //   /////////////////////////////////////////////////////// BL
+  //   Cromosoma::SetSemilla(semilla);
+  //   BusquedaLocal buquedaL(datos);
+  //   buquedaL.BL(iteraciones);
+  //   cout << "BL" << endl;
+  //   buquedaL.solucionBL.ImprimirCromosoma();
     // /////////////////////////////////////////////////////// AGG POSICIÓN
   //   Cromosoma::SetSemilla(semilla);
   //   Geneticos aggPosicion(datos, probCruceAGG, probMutacion, tamPoblacion);
@@ -162,6 +166,6 @@ int main(int argc, char *argv[]) {
     // memeticoMejores.Memetico(iteraciones, generacionMemetico, "0.1M");
     // cout << endl << "MEMÉTICO STANDARD MEJORES" << endl;
     // memeticoMejores.poblacion[0].ImprimirCromosoma();
-  }
+  //}
   return 0;
 }
