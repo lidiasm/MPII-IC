@@ -32,15 +32,11 @@ public:
     void MutacionEstacionarios(vector<Cromosoma> &pob);
 
     ////////////////////////////////////////////////////////////////////////////
-    // GENÉTICOS
-    // ALGORITMO GENERACIONAL CON CRUCE BASADO EN POSICIÓN
-    void AGGPosicion(int iteracionesTotal);
-    // ALGORITMO GENERACIONAL CON CRUCE OX
-    void AGGOX(int iteracionesTotal);
-    // ALGORITMO ESTACIONARIO CON CRUCE BASADO EN POSICIÓN
-    void AGEPosicion(int iteracionesTotal);
-    // ALGORITMO ESTACIONARIO CON CRUCE OX
-    void AGEOX(int iteracionesTotal);
+    // Algoritmos Genéticos Generacionales: cruce posición y OX
+    void AlgoritmoGeneracional(int iteracionesTotal, string cruce);
+    // Algoritmos Genéticos Estacionarios: cruce posición y OX
+    void AlgoritmoEstacionario(int iteracionesTotal, string cruce);
+    ////////////////////////////////////////////////////////////////////////////
 
     // MEMÉTICOS
     void MemeticoAGG(int iteracionesTotal, int generacionesBL,

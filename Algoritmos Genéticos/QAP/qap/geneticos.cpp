@@ -1,4 +1,6 @@
 #include "geneticos.h"
+#include "greedy.h"
+
 // Constructor
 Geneticos::Geneticos(DatosFichero &dat, float pC, float pM, int tam) {
   datos = dat;
@@ -7,6 +9,10 @@ Geneticos::Geneticos(DatosFichero &dat, float pC, float pM, int tam) {
   // Inicializamos la población
   poblacion.resize(tam);
   for (int i=0; i<poblacion.size(); i++) {
+    // Solución greedy
+    //Greedy g();
+    //g.GreedyConstructivo(datos);
+    //poblacion[i] = g.solucionGreedy;
     poblacion[i].InicializarSolucion(dat);
   }
   // Calculamos el número de cruces a realizar en función de la probabilidad establecida
@@ -145,7 +151,7 @@ void Geneticos::MutacionEstacionarios(vector<Cromosoma> &pob) {
 }
 
 // Esquema generacional del Algoritmo Generacional utilizando cruce basado en posición
-void Geneticos::AGGPosicion(int iteracionesTotal) {
+void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
   // Inicializamos a 0 el número de llamadas a la función objetivo.
   nIteraciones = 0;
   while (nIteraciones < iteracionesTotal) {
@@ -162,9 +168,15 @@ void Geneticos::AGGPosicion(int iteracionesTotal) {
     Cromosoma hijo1, hijo2;
     int padresCruzados = 0;
     for (int i=0; i<crucesARealizar; i++) {
-      hijo1 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
+      if (cruce == "POSICION") {
+        hijo1 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
+        hijo2 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
+      }
+      else {
+        hijo1 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
+        hijo2 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
+      }
       hijos.push_back(hijo1);
-      hijo2 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
       hijos.push_back(hijo2);
       // Dos padres cruzados
       padresCruzados += 2;
@@ -197,59 +209,59 @@ void Geneticos::AGGPosicion(int iteracionesTotal) {
 }
 
 // Esquema generacional del Algoritmo Generacional utilizando cruce OX
-void Geneticos::AGGOX(int iteracionesTotal) {
-  // Inicializamos a 0 el número de llamadas a la función objetivo.
-  nIteraciones = 0;
-  while (nIteraciones < iteracionesTotal) {
-    vector<Cromosoma> padres, hijos;
-    // Ordenamos la población actual
-    OrdenarPoblacion(poblacion);
-    // Selección de tantos padres como cromosomas haya en la población
-    int padreSeleccionado;
-    for (int i=0; i<poblacion.size(); i++) {
-      padreSeleccionado = TorneoBinario();
-      padres.push_back(poblacion[padreSeleccionado]);
-    }
-    // Cruzamos los padres con el operador de cruce basado en la posición
-    Cromosoma hijo1, hijo2;
-    int padresCruzados = 0;
-    for (int i=0; i<crucesARealizar; i++) {
-      hijo1 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
-      hijos.push_back(hijo1);
-      hijo2 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
-      hijos.push_back(hijo2);
-      // Dos padres cruzados
-      padresCruzados += 2;
-      // Dos hijos evaluados
-      nIteraciones += 2;
-    }
-    // Completamos la población con los padres que no se han cruzado
-    for (int i=padresCruzados; i<padres.size(); i++) {
-      hijos.push_back(padres[i]);
-    }
-    // Mutamos la población actual
-    Mutacion(hijos);
-    // Ordenamos de nuevo la población
-    OrdenarPoblacion(hijos);
-    // Elitismo: el mejor padre debe sobrevivir y se sustituirá por el peor hijo
-    bool mejorPadreEncontrado = false;
-    for (int i=0; i<hijos.size() && !mejorPadreEncontrado; i++) {
-      if (poblacion[0].solucion == hijos[i].solucion) {
-        mejorPadreEncontrado = true;
-      }
-    }
-    if (!mejorPadreEncontrado) {
-      hijos[hijos.size()-1] = poblacion[0];
-    }
-    // Actualizamos la población
-    poblacion = hijos;
-  }
-  // Se ordena la población final
-  OrdenarPoblacion(poblacion);
-}
+// void Geneticos::AGGOX(int iteracionesTotal) {
+//   // Inicializamos a 0 el número de llamadas a la función objetivo.
+//   nIteraciones = 0;
+//   while (nIteraciones < iteracionesTotal) {
+//     vector<Cromosoma> padres, hijos;
+//     // Ordenamos la población actual
+//     OrdenarPoblacion(poblacion);
+//     // Selección de tantos padres como cromosomas haya en la población
+//     int padreSeleccionado;
+//     for (int i=0; i<poblacion.size(); i++) {
+//       padreSeleccionado = TorneoBinario();
+//       padres.push_back(poblacion[padreSeleccionado]);
+//     }
+//     // Cruzamos los padres con el operador de cruce basado en la posición
+//     Cromosoma hijo1, hijo2;
+//     int padresCruzados = 0;
+//     for (int i=0; i<crucesARealizar; i++) {
+//       hijo1 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
+//       hijos.push_back(hijo1);
+//       hijo2 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
+//       hijos.push_back(hijo2);
+//       // Dos padres cruzados
+//       padresCruzados += 2;
+//       // Dos hijos evaluados
+//       nIteraciones += 2;
+//     }
+//     // Completamos la población con los padres que no se han cruzado
+//     for (int i=padresCruzados; i<padres.size(); i++) {
+//       hijos.push_back(padres[i]);
+//     }
+//     // Mutamos la población actual
+//     Mutacion(hijos);
+//     // Ordenamos de nuevo la población
+//     OrdenarPoblacion(hijos);
+//     // Elitismo: el mejor padre debe sobrevivir y se sustituirá por el peor hijo
+//     bool mejorPadreEncontrado = false;
+//     for (int i=0; i<hijos.size() && !mejorPadreEncontrado; i++) {
+//       if (poblacion[0].solucion == hijos[i].solucion) {
+//         mejorPadreEncontrado = true;
+//       }
+//     }
+//     if (!mejorPadreEncontrado) {
+//       hijos[hijos.size()-1] = poblacion[0];
+//     }
+//     // Actualizamos la población
+//     poblacion = hijos;
+//   }
+//   // Se ordena la población final
+//   OrdenarPoblacion(poblacion);
+// }
 
 // Esquema generacional del Algoritmo Estacionario con cruce basado en posición
-void Geneticos::AGEPosicion(int iteracionesTotal) {
+void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
   // Inicializamos las iteraciones a realizar a 0
   nIteraciones = 0;
   // Calculamos cada cuántas generaciones se muta mediante la Esperanza Matemática.
@@ -268,9 +280,15 @@ void Geneticos::AGEPosicion(int iteracionesTotal) {
     padre1 = TorneoBinario();
     padre2 = TorneoBinario();
     // Los cruzamos obteniendo dos hijos
-    hijo1 = CrucePosicion(poblacion[padre1], poblacion[padre2]);
+    if (cruce == "POSICION") {
+      hijo1 = CrucePosicion(poblacion[padre1], poblacion[padre2]);
+      hijo2 = CrucePosicion(poblacion[padre1], poblacion[padre2]);
+    }
+    else {
+      hijo1 = CruceOX(poblacion[padre1], poblacion[padre2]);
+      hijo2 = CruceOX(poblacion[padre1], poblacion[padre2]);
+    }
     hijos.push_back(hijo1);
-    hijo2 = CrucePosicion(poblacion[padre1], poblacion[padre2]);
     hijos.push_back(hijo2);
     nIteraciones += 2;
     // Mutamos cada X generaciones calculadas
@@ -291,46 +309,46 @@ void Geneticos::AGEPosicion(int iteracionesTotal) {
 }
 
 // Esquema generacional del Algoritmo Estacionario con cruce OX
-void Geneticos::AGEOX(int iteracionesTotal) {
-  // Inicializamos las iteraciones a realizar a 0
-  nIteraciones = 0;
-  // Calculamos cada cuántas generaciones se muta mediante la Esperanza Matemática.
-  // Para ello consideramos la probabilidad de mutación y la suma de los genes de dos cromosomas
-  int generacionAMutar = 1000/(datos.nInstalaciones*2);
-  int nGeneracion = 0;
-  int padre1, padre2;
-  Cromosoma hijo1, hijo2;
-
-  while (nIteraciones < iteracionesTotal) {
-    vector<Cromosoma> hijos;
-    nGeneracion++;
-    // Ordenamos la población
-    OrdenarPoblacion(poblacion);
-    // Elegimos a los dos padres a cruzar mediante torneo binario
-    padre1 = TorneoBinario();
-    padre2 = TorneoBinario();
-    // Los cruzamos obteniendo dos hijos
-    hijo1 = CruceOX(poblacion[padre1], poblacion[padre2]);
-    hijos.push_back(hijo1);
-    hijo2 = CruceOX(poblacion[padre1], poblacion[padre2]);
-    hijos.push_back(hijo2);
-    nIteraciones += 2;
-    // Mutamos cada X generaciones calculadas
-    if (nGeneracion == generacionAMutar) {
-      nGeneracion = 0;
-      MutacionEstacionarios(hijos);
-    }
-    // Reemplazamiento: incluimos los dos hijos obtenidos por los dos peores padres
-    // si los hijos son mejores.
-    // Para ello introducimos a los cuatro en una población, se ordenan y se introducen
-    // en la población actual los dos mejores
-    hijos.push_back(poblacion[poblacion.size()-1]);
-    hijos.push_back(poblacion[poblacion.size()-2]);
-    OrdenarPoblacion(hijos);
-    poblacion[poblacion.size()-1] = hijos[0];
-    poblacion[poblacion.size()-2] = hijos[1];
-  }
-}
+// void Geneticos::AGEOX(int iteracionesTotal) {
+//   // Inicializamos las iteraciones a realizar a 0
+//   nIteraciones = 0;
+//   // Calculamos cada cuántas generaciones se muta mediante la Esperanza Matemática.
+//   // Para ello consideramos la probabilidad de mutación y la suma de los genes de dos cromosomas
+//   int generacionAMutar = 1000/(datos.nInstalaciones*2);
+//   int nGeneracion = 0;
+//   int padre1, padre2;
+//   Cromosoma hijo1, hijo2;
+//
+//   while (nIteraciones < iteracionesTotal) {
+//     vector<Cromosoma> hijos;
+//     nGeneracion++;
+//     // Ordenamos la población
+//     OrdenarPoblacion(poblacion);
+//     // Elegimos a los dos padres a cruzar mediante torneo binario
+//     padre1 = TorneoBinario();
+//     padre2 = TorneoBinario();
+//     // Los cruzamos obteniendo dos hijos
+//     hijo1 = CruceOX(poblacion[padre1], poblacion[padre2]);
+//     hijos.push_back(hijo1);
+//     hijo2 = CruceOX(poblacion[padre1], poblacion[padre2]);
+//     hijos.push_back(hijo2);
+//     nIteraciones += 2;
+//     // Mutamos cada X generaciones calculadas
+//     if (nGeneracion == generacionAMutar) {
+//       nGeneracion = 0;
+//       MutacionEstacionarios(hijos);
+//     }
+//     // Reemplazamiento: incluimos los dos hijos obtenidos por los dos peores padres
+//     // si los hijos son mejores.
+//     // Para ello introducimos a los cuatro en una población, se ordenan y se introducen
+//     // en la población actual los dos mejores
+//     hijos.push_back(poblacion[poblacion.size()-1]);
+//     hijos.push_back(poblacion[poblacion.size()-2]);
+//     OrdenarPoblacion(hijos);
+//     poblacion[poblacion.size()-1] = hijos[0];
+//     poblacion[poblacion.size()-2] = hijos[1];
+//   }
+// }
 
 // ALGORITMO MEMÉTICO 1: híbrido entre el Algoritmo Generacional con la Búsqueda Local.
 // Se puede aplicar el operador de cruce basado en posición o el OX.
@@ -570,8 +588,8 @@ void Geneticos::Memetico(int iteracionesTotal, int generacionesBL, string pLS) {
     Cromosoma hijo1, hijo2;
     int padresCruzados = 0;
     for (int i=0; i<crucesARealizar; i++) {
-      hijo1 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
-      hijo2 = CruceOX(padres[padresCruzados], padres[padresCruzados+1]);
+      hijo1 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
+      hijo2 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
       hijos.push_back(hijo1);
       hijos.push_back(hijo2);
       // Dos padres cruzados
