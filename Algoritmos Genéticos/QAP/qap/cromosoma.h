@@ -15,7 +15,7 @@ public:
     ///////////////////////////////////////////////////////////////
     // CONSTRUCTORES
     Cromosoma();
-
+    
     //////////////////////////////////////////////////////////////
     // MÉTODOS ESTÁTICOS
     static int GenerarNumeroRandom(int limInf, int limSup);
@@ -25,6 +25,7 @@ public:
     int CalcularDiferenciaFitness(DatosFichero &datos, int i1, int i2);
     void InicializarSolucion(DatosFichero &datos);
     void IntercambiarGenes(int gen1, int gen2);
+    Cromosoma SimuladorIntercambioGenes(DatosFichero &datos, int gen1, int gen2);
     void ImprimirCromosoma();
 };
 

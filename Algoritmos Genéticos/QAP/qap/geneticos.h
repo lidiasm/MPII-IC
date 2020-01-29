@@ -4,6 +4,7 @@
 #include "cromosoma.h"
 #include "datosfichero.h"
 #include "busquedalocal.h"
+#include "greedy.h"
 
 class Geneticos
 {
@@ -17,10 +18,17 @@ public:
     // Lo ponemos como atributo para que cada vez que se llame a la función objetivo
     // se aumente una unidad. Este es el criterio de parada.
     int nIteraciones;
+    // Posibles variantes: standard, baldwiniana
+    // En función de la variante establecida se calculará el fitness con un método
+    // distinto
+    string variante;
+    // Objeto que nos permitirá acceder a los métodos Greedy, en particular a
+    // la variante 2-opt para ejecutar la variante baldwiniana.
+    Greedy algGreedy;
 
     ////////////////////////////////////////////////////////////////////////////
     // MÉTODOS
-    Geneticos(DatosFichero &dat, float pC, float pM, int tam);
+    Geneticos(DatosFichero &dat, float pC, float pM, int tam, bool iniciarGreedy, string var);
     void OrdenarPoblacion(vector<Cromosoma> &pob);
     // Operador de selección de los padres
     int TorneoBinario();

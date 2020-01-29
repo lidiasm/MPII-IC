@@ -1,6 +1,8 @@
 #include "greedy.h"
 
-Greedy::Greedy(DatosFichero &datos) {
+Greedy::Greedy() {}
+
+void Greedy::GreedyConstructivo(DatosFichero &datos) {
   // Inicializamos la solución
   solucionGreedy.solucion.resize(datos.nInstalaciones, -1);
   // Calculamos los dos vectores potenciales de la matriz de flujo y distancia
@@ -41,4 +43,25 @@ Greedy::Greedy(DatosFichero &datos) {
   }
   // Calculamos el fitness de la solución
   solucionGreedy.CalcularFitness(datos);
+}
+
+// Greedy de transposición
+void Greedy::Greedy2opt(Cromosoma crom, DatosFichero &datos) {
+  Cromosoma cromosomaOriginal = crom;
+  //int maxIteraciones = datos.nInstalaciones*(datos.nInstalaciones-1)/2;
+  //int iteracion = 0;
+  bool mejora = false;
+
+  for (int i=0; i<datos.nInstalaciones; i++) {
+    mejora = false;
+    for (int j=i+1; j<datos.nInstalaciones && !mejora; j++) {
+      Cromosoma nuevoCrom = crom.SimuladorIntercambioGenes(datos, i, j);
+      if (nuevoCrom.fitness < crom.fitness) {
+        crom = nuevoCrom;
+        mejora = true;
+      }
+    }
+  }
+  // Guardamos la solución final
+  solucionGreedy = crom;
 }

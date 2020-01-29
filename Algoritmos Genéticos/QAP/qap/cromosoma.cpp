@@ -6,6 +6,7 @@ Cromosoma::Cromosoma() {
   solucion = vector<int>(0);
   fitness = 0;
 }
+
 // Método estático para poder establecer una semilla para generar los números
 // aleatorios de forma que los resultados sean reproducibles
 void Cromosoma::SetSemilla(int &semilla) {
@@ -59,11 +60,19 @@ void Cromosoma::InicializarSolucion(DatosFichero &datos) {
 // incluir el fichero "pesudoaleatorio.h" y nos de un error relacionado con las
 // múltiples definiciones
 int Cromosoma::GenerarNumeroRandom(int limInf, int limSup) {
-    return Randint(limInf, limSup);
+  return Randint(limInf, limSup);
 }
 
 void Cromosoma::IntercambiarGenes(int gen1, int gen2) {
-    swap(solucion[gen1], solucion[gen2]);
+  swap(solucion[gen1], solucion[gen2]);
+}
+
+Cromosoma Cromosoma::SimuladorIntercambioGenes(DatosFichero &datos, int gen1, int gen2) {
+  Cromosoma copiaCromosoma;
+  copiaCromosoma.solucion = solucion;
+  swap(copiaCromosoma.solucion[gen1], copiaCromosoma.solucion[gen2]);
+  copiaCromosoma.CalcularFitness(datos);
+  return copiaCromosoma;
 }
 
 void Cromosoma::ImprimirCromosoma() {

@@ -41,29 +41,53 @@ int main(int argc, char *argv[]) {
   //   cout << "BL" << endl;
   //   buquedaL.solucionBL.ImprimirCromosoma();
     // /////////////////////////////////////////////////////// AGG POSICIÓN
+    // cout << endl << "AGG POSICION:" << endl;
+    // Cromosoma::SetSemilla(semilla);
+    // Geneticos aggPosicion(datos, probCruceAGG, probMutacion, tamPoblacion, false, "S");
+    // aggPosicion.AlgoritmoGeneracional(iteraciones, "POSICION");
+    // aggPosicion.poblacion[0].ImprimirCromosoma();
+
+    cout << endl << "AGG POSICION baldwiniana:" << endl;
     Cromosoma::SetSemilla(semilla);
-    Geneticos aggPosicion(datos, probCruceAGG, probMutacion, tamPoblacion);
+    Geneticos aggPosicion(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
     aggPosicion.AlgoritmoGeneracional(iteraciones, "POSICION");
-    cout << endl << "AGG POSICION:" << endl;
     aggPosicion.poblacion[0].ImprimirCromosoma();
-    /////////////////////////////////////////////////////// AGG OX
+
+    cout << endl << "AGG OX baldwiniana:" << endl;
     Cromosoma::SetSemilla(semilla);
-    Geneticos aggOX(datos, probCruceAGG, probMutacion, tamPoblacion);
-    aggOX.AlgoritmoGeneracional(iteraciones, "OX");
-    cout << endl << "AGG OX:" << endl;
-    aggOX.poblacion[0].ImprimirCromosoma();
-    /////////////////////////////////////////////////////// AGE POSICIÓN
+    Geneticos aggPosicion2(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
+    aggPosicion2.AlgoritmoGeneracional(iteraciones, "OX");
+    aggPosicion2.poblacion[0].ImprimirCromosoma();
+
+    cout << endl << "AGE POSICION baldwiniana:" << endl;
     Cromosoma::SetSemilla(semilla);
-    Geneticos agePosicion(datos, probCruceAGG, probMutacion, tamPoblacion);
+    Geneticos agePosicion(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
     agePosicion.AlgoritmoEstacionario(iteraciones, "POSICION");
-    cout << endl << "AGE POSICIÓN: " << endl;
     agePosicion.poblacion[0].ImprimirCromosoma();
-    /////////////////////////////////////////////////////// AGE OX
+
+    cout << endl << "AGE OX baldwiniana:" << endl;
     Cromosoma::SetSemilla(semilla);
-    Geneticos ageOX(datos, probCruceAGG, probMutacion, tamPoblacion);
-    ageOX.AlgoritmoEstacionario(iteraciones, "OX");
-    cout << endl << "AGE OX: " << endl;
-    ageOX.poblacion[0].ImprimirCromosoma();
+    Geneticos agePosicion2(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
+    agePosicion2.AlgoritmoEstacionario(iteraciones, "OX");
+    agePosicion2.poblacion[0].ImprimirCromosoma();
+    // /////////////////////////////////////////////////////// AGG OX
+    // Cromosoma::SetSemilla(semilla);
+    // Geneticos aggOX(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
+    // aggOX.AlgoritmoGeneracional(iteraciones, "OX");
+    // cout << endl << "AGG OX:" << endl;
+    // aggOX.poblacion[0].ImprimirCromosoma();
+    // /////////////////////////////////////////////////////// AGE POSICIÓN
+    // Cromosoma::SetSemilla(semilla);
+    // Geneticos agePosicion(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
+    // agePosicion.AlgoritmoEstacionario(iteraciones, "POSICION");
+    // cout << endl << "AGE POSICIÓN: " << endl;
+    // agePosicion.poblacion[0].ImprimirCromosoma();
+    // /////////////////////////////////////////////////////// AGE OX
+    // Cromosoma::SetSemilla(semilla);
+    // Geneticos ageOX(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
+    // ageOX.AlgoritmoEstacionario(iteraciones, "OX");
+    // cout << endl << "AGE OX: " << endl;
+    // ageOX.poblacion[0].ImprimirCromosoma();
   // }
     ////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////// MEMÉTICO AGG POSICIÓN

@@ -9,10 +9,14 @@
 class Greedy {
 public:
   Cromosoma solucionGreedy;
-
   //////////////////////////
   // Construtor
-  Greedy(DatosFichero &datos);
+  Greedy();
+  /////////////////////////
+  // Greedy constructivo (clásico)
+  void GreedyConstructivo(DatosFichero &datos);
+  // Greedy de transposición: 2-opt
+  void Greedy2opt(Cromosoma crom, DatosFichero &datos);
 };
 
 #endif
