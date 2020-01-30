@@ -51,7 +51,9 @@ public:
       bool crucePosicion, string pLS);
     void MemeticoAGE(int iteracionesTotal, int generacionesBL,
       bool crucePosicion, string pLS);
-    void Memetico(int iteracionesTotal, int generacionesBL, string pLS);
+
+
+    void CalcularFitnessBaldwiniano(vector<Cromosoma> &pob);
 };
 
 #endif

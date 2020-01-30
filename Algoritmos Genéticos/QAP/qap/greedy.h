@@ -9,6 +9,7 @@
 class Greedy {
 public:
   Cromosoma solucionGreedy;
+  int iteracion;
   //////////////////////////
   // Construtor
   Greedy();

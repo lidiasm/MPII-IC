@@ -20,14 +20,11 @@ Geneticos::Geneticos(DatosFichero &dat, float pC, float pM, int tam,
       Greedy g;
       g.GreedyConstructivo(datos);
       poblacion[i] = g.solucionGreedy;
-      poblacion[i].InicializarSolucion(dat);
     }
   }
-  // Si la variante es baldwiniana, se calcula el fitness con el algoritmo 2-opt
-  for (int i=0; i<poblacion.size(); i++) {
-    algGreedy.Greedy2opt(poblacion[i], datos);
-    // Actualizamos su fitness
-    poblacion[i].fitness = algGreedy.solucionGreedy.fitness;
+  ////////// VARIANTE BALDWINIANA
+  if (variante == "B") {
+    CalcularFitnessBaldwiniano(poblacion);
   }
   // Calculamos el número de cruces a realizar en función de la probabilidad establecida
   // y el tamaño de la población
@@ -35,6 +32,17 @@ Geneticos::Geneticos(DatosFichero &dat, float pC, float pM, int tam,
   // Y calculamos cuántos genes se deben mutar por su probabilidad, tamaño de la
   // población y el número de datos recopilados
   genesAMutar = probMutacion*(poblacion.size()*datos.nInstalaciones);
+}
+
+void Geneticos::CalcularFitnessBaldwiniano(vector<Cromosoma> &pob) {
+  //cout << "Variante baldw" << endl;
+  // Si la variante es baldwiniana, se calcula el fitness con el algoritmo 2-opt
+  for (int i=0; i<pob.size(); i++) {
+    algGreedy.Greedy2opt(pob[i], datos);
+    // Actualizamos su fitness
+    pob[i].fitness = algGreedy.solucionGreedy.fitness;
+  }
+  //cout << "Fin variante badlw. Mejor solución: " << pob[0].fitness << endl;
 }
 
 // Ordenamos la población para que sea más fácil obtener la solución óptima (que será el primer cromosoma)
@@ -91,11 +99,11 @@ Cromosoma Geneticos::CrucePosicion(Cromosoma c1, Cromosoma c2) {
     }
   }
   hijo.CalcularFitness(datos);
-  if (variante == "B") {
-    algGreedy.Greedy2opt(hijo, datos);
-    // Actualizamos su fitness
-    hijo.fitness = algGreedy.solucionGreedy.fitness;
-  }
+  // if (variante == "B") {
+  //   algGreedy.Greedy2opt(hijo, datos);
+  //   // Actualizamos su fitness
+  //   hijo.fitness = algGreedy.solucionGreedy.fitness;
+  // }
 
   return hijo;
 }
@@ -134,11 +142,11 @@ Cromosoma Geneticos::CruceOX(Cromosoma c1, Cromosoma c2) {
   }
   // Evaluamos al nuevo hijo generado
   hijo.CalcularFitness(datos);
-  if (variante == "B") {
-    algGreedy.Greedy2opt(hijo, datos);
-    // Actualizamos su fitness
-    hijo.fitness = algGreedy.solucionGreedy.fitness;
-  }
+  // if (variante == "B") {
+  //   algGreedy.Greedy2opt(hijo, datos);
+  //   // Actualizamos su fitness
+  //   hijo.fitness = algGreedy.solucionGreedy.fitness;
+  // }
   return hijo;
 }
 
@@ -157,11 +165,11 @@ void Geneticos::Mutacion(vector<Cromosoma> &pob) {
     hijoAMutar = Cromosoma::GenerarNumeroRandom(0, pob.size()-1);
     pob[hijoAMutar].IntercambiarGenes(gen1, gen2);
     pob[hijoAMutar].CalcularFitness(datos);
-    if (variante == "B") {
-      algGreedy.Greedy2opt(pob[hijoAMutar], datos);
-      // Actualizamos su fitness
-      pob[hijoAMutar].fitness = algGreedy.solucionGreedy.fitness;
-    }
+    // if (variante == "B") {
+    //  algGreedy.Greedy2opt(pob[hijoAMutar], datos);
+    //  // Actualizamos su fitness
+    //  pob[hijoAMutar].fitness = algGreedy.solucionGreedy.fitness;
+    // }
   }
 }
 // Operador de mutación para los Algoritmos Genéticos en los que solamente
@@ -178,11 +186,11 @@ void Geneticos::MutacionEstacionarios(vector<Cromosoma> &pob) {
   hijoAMutar = Cromosoma::GenerarNumeroRandom(0, pob.size()-1);
   pob[hijoAMutar].IntercambiarGenes(gen1, gen2);
   pob[hijoAMutar].CalcularFitness(datos);
-  if (variante == "B") {
-    algGreedy.Greedy2opt(pob[hijoAMutar], datos);
-    // Actualizamos su fitness
-    pob[hijoAMutar].fitness = algGreedy.solucionGreedy.fitness;
-  }
+  // if (variante == "B") {
+  //  algGreedy.Greedy2opt(pob[hijoAMutar], datos);
+  //  // Actualizamos su fitness
+  //  pob[hijoAMutar].fitness = algGreedy.solucionGreedy.fitness;
+  // }
 }
 
 // Esquema generacional del Algoritmo Generacional.
@@ -191,6 +199,7 @@ void Geneticos::MutacionEstacionarios(vector<Cromosoma> &pob) {
 void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
   // Inicializamos a 0 el número de llamadas a la función objetivo.
   nIteraciones = 0;
+  int multiplicador = 2500;
   while (nIteraciones < iteracionesTotal) {
     vector<Cromosoma> padres, hijos;
     // Ordenamos la población actual
@@ -227,6 +236,11 @@ void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
     }
     // Mutamos la población actual
     Mutacion(hijos);
+    if (variante == "B") {
+      CalcularFitnessBaldwiniano(hijos);
+      nIteraciones += algGreedy.iteracion;
+      //cout << "Iteraciones Greedy " << algGreedy.iteracion << endl;
+    }
     // Ordenamos de nuevo la población
     OrdenarPoblacion(hijos);
     // Elitismo: el mejor padre debe sobrevivir y se sustituirá por el peor hijo
@@ -241,12 +255,13 @@ void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
     }
     // Actualizamos la población
     poblacion = hijos;
-
-    cout << "Mejor en la iteración " << nIteraciones << endl;
-    poblacion[0].ImprimirCromosoma();
+    //cout << "Mejor solución " << poblacion[0].fitness << " - Iteracion: " << nIteraciones << endl;
+    if (nIteraciones >= multiplicador) {
+      cout << poblacion[0].fitness <<endl;
+      //cout << nIteraciones << endl;
+      multiplicador += 2500;
+    }
   }
-  // Se ordena la población final
-  OrdenarPoblacion(poblacion);
 }
 // Esquema generacional del Algoritmo Estacionario con cruce basado en posición
 void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
@@ -258,6 +273,7 @@ void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
   int nGeneracion = 0;
   int padre1, padre2;
   Cromosoma hijo1, hijo2;
+  //int multiplicador = 2500;
 
   while (nIteraciones < iteracionesTotal) {
     vector<Cromosoma> hijos;
@@ -293,6 +309,12 @@ void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
     OrdenarPoblacion(hijos);
     poblacion[poblacion.size()-1] = hijos[0];
     poblacion[poblacion.size()-2] = hijos[1];
+
+    //if (nIteraciones >= multiplicador) {
+      //cout << poblacion[0].fitness <<endl;
+      //cout << nIteraciones << endl;
+      //multiplicador += 2500;
+    //}
   }
 }
 
@@ -304,7 +326,7 @@ void Geneticos::MemeticoAGG(int iteracionesTotal, int generacionesBL,
   nIteraciones = 0;
   // Contamos las generaciones para aplicar la búsqueda local
   int nGeneracion = 0;
-
+  int multiplicador = 2500;
   while (nIteraciones < iteracionesTotal) {
     nGeneracion++;
     vector<Cromosoma> padres, hijos;
@@ -395,6 +417,11 @@ void Geneticos::MemeticoAGG(int iteracionesTotal, int generacionesBL,
     }
     // Actualizamos la población
     poblacion = hijos;
+    if (nIteraciones >= multiplicador) {
+      //cout << poblacion[0].fitness <<endl;
+      cout << nIteraciones << endl;
+      multiplicador += 2500;
+    }
   }
   // Se ordena la población final
   OrdenarPoblacion(poblacion);
@@ -411,6 +438,7 @@ void Geneticos::MemeticoAGE(int iteracionesTotal, int generacionesBL,
   // Cada cuántas generaciones vamos a mutar a los hijos
   int generacionAMutar = 1000/(datos.nInstalaciones*poblacion.size());
   int nGeneracionMutar = 0;
+  int multiplicador = 2500;
   while (nIteraciones < iteracionesTotal) {
     nGeneracion++;
     nGeneracionMutar++;
@@ -505,108 +533,10 @@ void Geneticos::MemeticoAGE(int iteracionesTotal, int generacionesBL,
     }
     // Actualizamos la población
     poblacion = hijos;
+    if (nIteraciones >= multiplicador) {
+      //cout << poblacion[0].fitness <<endl;
+      cout << nIteraciones << endl;
+      multiplicador += 2500;
+    }
   }
-  // Se ordena la población final
-  OrdenarPoblacion(poblacion);
-}
-
-void Geneticos::Memetico(int iteracionesTotal, int generacionesBL, string pLS) {
-  // Inicializamos a 0 el número de llamadas a la función objetivo.
-  nIteraciones = 0;
-  // Contamos las generaciones para aplicar la búsqueda local
-  int nGeneracion = 0;
-  // Cada cuántas generaciones vamos a mutar a los hijos
-  int generacionAMutar = 1000/(datos.nInstalaciones*poblacion.size());
-  int nGeneracionMutar = 0;
-  while (nIteraciones < iteracionesTotal) {
-    nGeneracion++;
-    nGeneracionMutar++;
-    vector<Cromosoma> padres, hijos;
-    // Ordenamos la población actual
-    OrdenarPoblacion(poblacion);
-    // Selección de tantos padres como cromosomas haya en la población
-    int padreSeleccionado;
-    for (int i=0; i<poblacion.size(); i++) {
-      padreSeleccionado = TorneoBinario();
-      padres.push_back(poblacion[padreSeleccionado]);
-    }
-    // Cruzamos los padres con el operador de cruce basado en la posición
-    Cromosoma hijo1, hijo2;
-    int padresCruzados = 0;
-    for (int i=0; i<crucesARealizar; i++) {
-      hijo1 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
-      hijo2 = CrucePosicion(padres[padresCruzados], padres[padresCruzados+1]);
-      hijos.push_back(hijo1);
-      hijos.push_back(hijo2);
-      // Dos padres cruzados
-      padresCruzados += 2;
-      // Dos hijos evaluados
-      nIteraciones += 2;
-    }
-    // Completamos la población con los padres que no se han cruzado
-    for (int i=padresCruzados; i<padres.size(); i++) {
-      hijos.push_back(padres[i]);
-    }
-    // Mutamos la población actual
-    if (nGeneracionMutar == generacionAMutar) {
-      nGeneracionMutar = 0;
-      MutacionEstacionarios(hijos);
-    }
-
-    ///////// BÚSQUEDA LOCAL
-    if (nGeneracion == generacionesBL) {
-      nGeneracion = 0;
-      // Búsqueda local sobre la población completa
-      if (pLS == "1.0") {
-        for (int i=0; i<hijos.size(); i++) {
-          BusquedaLocal busquedaL(datos, hijos[i]);
-          busquedaL.BL(400);
-          hijos[i] = busquedaL.solucionBL;
-          nIteraciones += busquedaL.nIteraciones;
-        }
-      }
-      // Búsqueda local sobre el 10% aleatoriamente
-      else if (pLS == "0.1") {
-        vector<Cromosoma> hijosBL;
-        for (int i=0; i<hijos.size()*0.1; i++) {
-          int hijoSeleccionado = Cromosoma::GenerarNumeroRandom(0, hijos.size()-1);
-          hijosBL.push_back(hijos[hijoSeleccionado]);
-        }
-        // BL con los hijos escogidos aleatoriamente
-        for (int i=0; i<hijosBL.size(); i++) {
-          BusquedaLocal busquedaL(datos, hijosBL[i]);
-          busquedaL.BL(400);
-          hijos[i] = busquedaL.solucionBL;
-          nIteraciones += busquedaL.nIteraciones;
-        }
-      }
-      // Búsqueda local sobre el 10% de los mejores
-      else if (pLS == "0.1M") {
-        OrdenarPoblacion(hijos);
-        for (int i=0; i<hijos.size()*0.1; i++) {
-          BusquedaLocal busquedaL(datos, hijos[i]);
-          busquedaL.BL(400);
-          hijos[i] = busquedaL.solucionBL;
-          nIteraciones += busquedaL.nIteraciones;
-        }
-      }
-    }
-
-    // Ordenamos de nuevo la población
-    OrdenarPoblacion(hijos);
-    // Elitismo: el mejor padre debe sobrevivir y se sustituirá por el peor hijo
-    bool mejorPadreEncontrado = false;
-    for (int i=0; i<hijos.size() && !mejorPadreEncontrado; i++) {
-      if (poblacion[0].solucion == hijos[i].solucion) {
-        mejorPadreEncontrado = true;
-      }
-    }
-    if (!mejorPadreEncontrado) {
-      hijos[hijos.size()-1] = poblacion[0];
-    }
-    // Actualizamos la población
-    poblacion = hijos;
-  }
-  // Se ordena la población final
-  OrdenarPoblacion(poblacion);
 }

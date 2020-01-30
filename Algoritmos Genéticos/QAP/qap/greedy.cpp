@@ -47,21 +47,28 @@ void Greedy::GreedyConstructivo(DatosFichero &datos) {
 
 // Greedy de transposición
 void Greedy::Greedy2opt(Cromosoma crom, DatosFichero &datos) {
-  Cromosoma cromosomaOriginal = crom;
-  //int maxIteraciones = datos.nInstalaciones*(datos.nInstalaciones-1)/2;
-  //int iteracion = 0;
+  Cromosoma cromOriginal = crom;
+  Cromosoma mejorCrom = crom;
+  iteracion = 0;
   bool mejora = false;
+  int nIteraciones = 400;
 
-  for (int i=0; i<datos.nInstalaciones; i++) {
+  do {
     mejora = false;
-    for (int j=i+1; j<datos.nInstalaciones && !mejora; j++) {
-      Cromosoma nuevoCrom = crom.SimuladorIntercambioGenes(datos, i, j);
-      if (nuevoCrom.fitness < crom.fitness) {
-        crom = nuevoCrom;
-        mejora = true;
+    for (int i=0; i<datos.nInstalaciones; i++) {
+      for (int j=i+1; j<datos.nInstalaciones && !mejora; j++) {
+        Cromosoma nuevoCrom = crom.SimuladorIntercambioGenes(datos, i, j);
+        if (nuevoCrom.fitness < crom.fitness) {
+          crom = nuevoCrom;
+        }
+        if (crom.fitness < mejorCrom.fitness) {
+          mejorCrom = crom;
+          mejora = true;
+        }
       }
     }
-  }
+    iteracion ++;
+  } while( (iteracion < nIteraciones) && mejora);
   // Guardamos la solución final
-  solucionGreedy = crom;
+  solucionGreedy = mejorCrom;
 }
