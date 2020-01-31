@@ -51,7 +51,7 @@ void Greedy::Greedy2opt(Cromosoma crom, DatosFichero &datos) {
   Cromosoma mejorCrom = crom;
   iteracion = 0;
   bool mejora = false;
-  int nIteraciones = 400;
+  int nIteraciones = 10;
 
   do {
     mejora = false;

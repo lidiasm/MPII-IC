@@ -1,4 +1,5 @@
 #include "geneticos.h"
+#include <time.h>
 
 Geneticos::Geneticos(DatosFichero &dat, float pC, float pM, int tam,
   bool iniciarGreedy, string var) {
@@ -40,6 +41,7 @@ void Geneticos::CalcularFitnessBaldwiniano(vector<Cromosoma> &pob) {
   for (int i=0; i<pob.size(); i++) {
     algGreedy.Greedy2opt(pob[i], datos);
     // Actualizamos su fitness
+    //cout << "Iteraciones greedy: " << algGreedy.iteracion << endl;
     pob[i].fitness = algGreedy.solucionGreedy.fitness;
   }
   //cout << "Fin variante badlw. Mejor solución: " << pob[0].fitness << endl;
@@ -200,7 +202,12 @@ void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
   // Inicializamos a 0 el número de llamadas a la función objetivo.
   nIteraciones = 0;
   int multiplicador = 2500;
+  int nIteracionesBL = 0;
+  // Medir tiempo
+  clock_t start,end;
+  start = clock();
   while (nIteraciones < iteracionesTotal) {
+    nIteracionesBL++;
     vector<Cromosoma> padres, hijos;
     // Ordenamos la población actual
     OrdenarPoblacion(poblacion);
@@ -236,7 +243,8 @@ void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
     }
     // Mutamos la población actual
     Mutacion(hijos);
-    if (variante == "B") {
+    if (variante == "B" && nIteracionesBL == 5) {
+      nIteracionesBL = 0;
       CalcularFitnessBaldwiniano(hijos);
       nIteraciones += algGreedy.iteracion;
       //cout << "Iteraciones Greedy " << algGreedy.iteracion << endl;
@@ -262,22 +270,24 @@ void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
       multiplicador += 2500;
     }
   }
+  end = clock();
+  float tiempo = (end-start)/(double)CLOCKS_PER_SEC;
+  cout << "Tiempo " << tiempo << endl;
 }
 // Esquema generacional del Algoritmo Estacionario con cruce basado en posición
 void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
   // Inicializamos las iteraciones a realizar a 0
   nIteraciones = 0;
-  // Calculamos cada cuántas generaciones se muta mediante la Esperanza Matemática.
-  // Para ello consideramos la probabilidad de mutación y la suma de los genes de dos cromosomas
-  int generacionAMutar = 1000/(datos.nInstalaciones*2);
-  int nGeneracion = 0;
   int padre1, padre2;
   Cromosoma hijo1, hijo2;
-  //int multiplicador = 2500;
-
+  int multiplicador = 2500;
+  int nIteracionesBL = 0;
+  // Medir tiempo
+  clock_t start,end;
+  start = clock();
   while (nIteraciones < iteracionesTotal) {
+    nIteracionesBL++;
     vector<Cromosoma> hijos;
-    nGeneracion++;
     // Ordenamos la población
     OrdenarPoblacion(poblacion);
     // Elegimos a los dos padres a cruzar mediante torneo binario
@@ -295,10 +305,13 @@ void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
     hijos.push_back(hijo1);
     hijos.push_back(hijo2);
     nIteraciones += 2;
-    // Mutamos cada X generaciones calculadas
-    if (nGeneracion == generacionAMutar) {
-      nGeneracion = 0;
-      MutacionEstacionarios(hijos);
+    // Mutamos
+    MutacionEstacionarios(hijos);
+    if (variante == "B" && nIteraciones == 5) {
+      nIteraciones = 0;
+      CalcularFitnessBaldwiniano(hijos);
+      nIteraciones += algGreedy.iteracion;
+      //cout << "Iteraciones Greedy " << algGreedy.iteracion << endl;
     }
     // Reemplazamiento: incluimos los dos hijos obtenidos por los dos peores padres
     // si los hijos son mejores.
@@ -310,12 +323,15 @@ void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
     poblacion[poblacion.size()-1] = hijos[0];
     poblacion[poblacion.size()-2] = hijos[1];
 
-    //if (nIteraciones >= multiplicador) {
-      //cout << poblacion[0].fitness <<endl;
+    if (nIteraciones >= multiplicador) {
+      cout << poblacion[0].fitness <<endl;
       //cout << nIteraciones << endl;
-      //multiplicador += 2500;
-    //}
+      multiplicador += 2500;
+    }
   }
+  end = clock();
+  float tiempo = (end-start)/(double)CLOCKS_PER_SEC;
+  cout << "Tiempo " << tiempo << endl;
 }
 
 // ALGORITMO MEMÉTICO 1: híbrido entre el Algoritmo Generacional con la Búsqueda Local.
@@ -326,7 +342,10 @@ void Geneticos::MemeticoAGG(int iteracionesTotal, int generacionesBL,
   nIteraciones = 0;
   // Contamos las generaciones para aplicar la búsqueda local
   int nGeneracion = 0;
-  int multiplicador = 2500;
+  //int multiplicador = 2500;
+  // Medir tiempo
+  clock_t start,end;
+  start = clock();
   while (nIteraciones < iteracionesTotal) {
     nGeneracion++;
     vector<Cromosoma> padres, hijos;
@@ -417,14 +436,15 @@ void Geneticos::MemeticoAGG(int iteracionesTotal, int generacionesBL,
     }
     // Actualizamos la población
     poblacion = hijos;
-    if (nIteraciones >= multiplicador) {
+    //if (nIteraciones >= multiplicador) {
       //cout << poblacion[0].fitness <<endl;
-      cout << nIteraciones << endl;
-      multiplicador += 2500;
-    }
+      //cout << nIteraciones << endl;
+      //multiplicador += 2500;
+    //}
   }
-  // Se ordena la población final
-  OrdenarPoblacion(poblacion);
+  end = clock();
+  float tiempo = (end-start)/(double)CLOCKS_PER_SEC;
+  cout << "Tiempo " << tiempo << endl;
 }
 
 // ALGORITMO MEMÉTICO 2: híbrido entre el Algoritmo Estacionario con la Búsqueda Local.
@@ -435,13 +455,12 @@ void Geneticos::MemeticoAGE(int iteracionesTotal, int generacionesBL,
   nIteraciones = 0;
   // Contamos las generaciones para aplicar la búsqueda local
   int nGeneracion = 0;
-  // Cada cuántas generaciones vamos a mutar a los hijos
-  int generacionAMutar = 1000/(datos.nInstalaciones*poblacion.size());
-  int nGeneracionMutar = 0;
-  int multiplicador = 2500;
+  //int multiplicador = 2500;
+  // Medir tiempo
+  clock_t start,end;
+  start = clock();
   while (nIteraciones < iteracionesTotal) {
     nGeneracion++;
-    nGeneracionMutar++;
     vector<Cromosoma> padres, hijos;
     // Ordenamos la población actual
     OrdenarPoblacion(poblacion);
@@ -475,10 +494,7 @@ void Geneticos::MemeticoAGE(int iteracionesTotal, int generacionesBL,
       hijos.push_back(padres[i]);
     }
     // Mutamos la población actual
-    if (nGeneracionMutar == generacionAMutar) {
-      nGeneracionMutar = 0;
-      MutacionEstacionarios(hijos);
-    }
+    MutacionEstacionarios(hijos);
 
     ///////// BÚSQUEDA LOCAL
     if (nGeneracion == generacionesBL) {
@@ -533,10 +549,13 @@ void Geneticos::MemeticoAGE(int iteracionesTotal, int generacionesBL,
     }
     // Actualizamos la población
     poblacion = hijos;
-    if (nIteraciones >= multiplicador) {
+    //if (nIteraciones >= multiplicador) {
       //cout << poblacion[0].fitness <<endl;
-      cout << nIteraciones << endl;
-      multiplicador += 2500;
-    }
+      //cout << nIteraciones << endl;
+      //multiplicador += 2500;
+    //}
   }
+  end = clock();
+  float tiempo = (end-start)/(double)CLOCKS_PER_SEC;
+  cout << "Tiempo " << tiempo << endl;
 }
