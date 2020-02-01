@@ -27,6 +27,9 @@ Geneticos::Geneticos(DatosFichero &dat, float pC, float pM, int tam,
   if (variante == "B") {
     CalcularFitnessBaldwiniano(poblacion);
   }
+  else if (variante == "L") {
+    CalcularFitnessLamarckiano(poblacion);
+  }
   // Calculamos el número de cruces a realizar en función de la probabilidad establecida
   // y el tamaño de la población
   crucesARealizar = probCruce*(poblacion.size()/2) + 1;
@@ -35,16 +38,23 @@ Geneticos::Geneticos(DatosFichero &dat, float pC, float pM, int tam,
   genesAMutar = probMutacion*(poblacion.size()*datos.nInstalaciones);
 }
 
+// Método para calcular el coste de una solución aplicando un algoritmo Greedy
+// de transposición 2-opt, sin susituir el cromosoma original.
 void Geneticos::CalcularFitnessBaldwiniano(vector<Cromosoma> &pob) {
-  //cout << "Variante baldw" << endl;
-  // Si la variante es baldwiniana, se calcula el fitness con el algoritmo 2-opt
   for (int i=0; i<pob.size(); i++) {
     algGreedy.Greedy2opt(pob[i], datos);
-    // Actualizamos su fitness
-    //cout << "Iteraciones greedy: " << algGreedy.iteracion << endl;
     pob[i].fitness = algGreedy.solucionGreedy.fitness;
   }
-  //cout << "Fin variante badlw. Mejor solución: " << pob[0].fitness << endl;
+}
+
+// Método para calcular el fitness con un algoritmo Greedy 2-opt y sustituir
+// el cromosoma original por el nuevo generado con este algoritmo.
+void Geneticos::CalcularFitnessLamarckiano(vector<Cromosoma> &pob) {
+  for (int i=0; i<pob.size(); i++) {
+    algGreedy.Greedy2opt(pob[i], datos);
+    pob[i].fitness = algGreedy.solucionGreedy.fitness;
+    pob[i].solucion = algGreedy.solucionGreedy.solucion;
+  }
 }
 
 // Ordenamos la población para que sea más fácil obtener la solución óptima (que será el primer cromosoma)
@@ -101,12 +111,6 @@ Cromosoma Geneticos::CrucePosicion(Cromosoma c1, Cromosoma c2) {
     }
   }
   hijo.CalcularFitness(datos);
-  // if (variante == "B") {
-  //   algGreedy.Greedy2opt(hijo, datos);
-  //   // Actualizamos su fitness
-  //   hijo.fitness = algGreedy.solucionGreedy.fitness;
-  // }
-
   return hijo;
 }
 
@@ -144,11 +148,6 @@ Cromosoma Geneticos::CruceOX(Cromosoma c1, Cromosoma c2) {
   }
   // Evaluamos al nuevo hijo generado
   hijo.CalcularFitness(datos);
-  // if (variante == "B") {
-  //   algGreedy.Greedy2opt(hijo, datos);
-  //   // Actualizamos su fitness
-  //   hijo.fitness = algGreedy.solucionGreedy.fitness;
-  // }
   return hijo;
 }
 
@@ -167,11 +166,6 @@ void Geneticos::Mutacion(vector<Cromosoma> &pob) {
     hijoAMutar = Cromosoma::GenerarNumeroRandom(0, pob.size()-1);
     pob[hijoAMutar].IntercambiarGenes(gen1, gen2);
     pob[hijoAMutar].CalcularFitness(datos);
-    // if (variante == "B") {
-    //  algGreedy.Greedy2opt(pob[hijoAMutar], datos);
-    //  // Actualizamos su fitness
-    //  pob[hijoAMutar].fitness = algGreedy.solucionGreedy.fitness;
-    // }
   }
 }
 // Operador de mutación para los Algoritmos Genéticos en los que solamente
@@ -188,11 +182,6 @@ void Geneticos::MutacionEstacionarios(vector<Cromosoma> &pob) {
   hijoAMutar = Cromosoma::GenerarNumeroRandom(0, pob.size()-1);
   pob[hijoAMutar].IntercambiarGenes(gen1, gen2);
   pob[hijoAMutar].CalcularFitness(datos);
-  // if (variante == "B") {
-  //  algGreedy.Greedy2opt(pob[hijoAMutar], datos);
-  //  // Actualizamos su fitness
-  //  pob[hijoAMutar].fitness = algGreedy.solucionGreedy.fitness;
-  // }
 }
 
 // Esquema generacional del Algoritmo Generacional.
@@ -243,11 +232,15 @@ void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
     }
     // Mutamos la población actual
     Mutacion(hijos);
-    if (variante == "B" && nIteracionesBL == 5) {
+    if (variante == "B" && nIteracionesBL == 10) {
       nIteracionesBL = 0;
       CalcularFitnessBaldwiniano(hijos);
       nIteraciones += algGreedy.iteracion;
-      //cout << "Iteraciones Greedy " << algGreedy.iteracion << endl;
+    }
+    else if (variante == "L" && nIteracionesBL == 10) {
+      nIteracionesBL = 0;
+      CalcularFitnessLamarckiano(poblacion);
+      nIteraciones += algGreedy.iteracion;
     }
     // Ordenamos de nuevo la población
     OrdenarPoblacion(hijos);
@@ -265,8 +258,8 @@ void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
     poblacion = hijos;
     //cout << "Mejor solución " << poblacion[0].fitness << " - Iteracion: " << nIteraciones << endl;
     if (nIteraciones >= multiplicador) {
-      cout << poblacion[0].fitness <<endl;
-      //cout << nIteraciones << endl;
+      //cout << poblacion[0].fitness <<endl;
+      cout << nIteraciones << endl;
       multiplicador += 2500;
     }
   }
@@ -307,11 +300,15 @@ void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
     nIteraciones += 2;
     // Mutamos
     MutacionEstacionarios(hijos);
-    if (variante == "B" && nIteraciones == 5) {
+    if (variante == "B" && nIteraciones == 10) {
       nIteraciones = 0;
       CalcularFitnessBaldwiniano(hijos);
       nIteraciones += algGreedy.iteracion;
-      //cout << "Iteraciones Greedy " << algGreedy.iteracion << endl;
+    }
+    else if (variante == "L" && nIteracionesBL == 10) {
+      nIteracionesBL = 0;
+      CalcularFitnessLamarckiano(poblacion);
+      nIteraciones += algGreedy.iteracion;
     }
     // Reemplazamiento: incluimos los dos hijos obtenidos por los dos peores padres
     // si los hijos son mejores.
@@ -324,8 +321,8 @@ void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
     poblacion[poblacion.size()-2] = hijos[1];
 
     if (nIteraciones >= multiplicador) {
-      cout << poblacion[0].fitness <<endl;
-      //cout << nIteraciones << endl;
+      //cout << poblacion[0].fitness <<endl;
+      cout << nIteraciones << endl;
       multiplicador += 2500;
     }
   }

@@ -150,40 +150,25 @@ int main(int argc, char *argv[]) {
 
   //////////////////////////////////////////////////////////////////////////////
   /////////////////////////////// B A L D W I N I A N O S /////////////////////////////
-  cout << "AGG POSICIÓN BALDWINIANO" << endl;
+  cout << "AGG POSICIÓN LAMARCKIANO" << endl;
   Cromosoma::SetSemilla(semilla);
-  Geneticos aggBaldwiniano(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
+  Geneticos aggBaldwiniano(datos, probCruceAGG, probMutacion, tamPoblacion, false, "L");
   aggBaldwiniano.AlgoritmoGeneracional(iteraciones, "POSICION");
 
-  cout << "AGG OX BALDWINIANO" << endl;
+  cout << "AGG OX LAMARCKIANO" << endl;
   Cromosoma::SetSemilla(semilla);
-  Geneticos aggBaldwinianoOX(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
+  Geneticos aggBaldwinianoOX(datos, probCruceAGG, probMutacion, tamPoblacion, false, "L");
   aggBaldwinianoOX.AlgoritmoGeneracional(iteraciones, "OX");
 
-  cout << "AGE POSICIÓN BALDWINIANO" << endl;
+  cout << "AGE POSICIÓN LAMARCKIANO" << endl;
   Cromosoma::SetSemilla(semilla);
-  Geneticos ageBaldwiniano(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
+  Geneticos ageBaldwiniano(datos, probCruceAGG, probMutacion, tamPoblacion, false, "L");
   ageBaldwiniano.AlgoritmoEstacionario(iteraciones, "POSICION");
 
-  cout << "AGE OX BALDWINIANO" << endl;
+  cout << "AGE OX LAMARCKIANO" << endl;
   Cromosoma::SetSemilla(semilla);
-  Geneticos ageBaldwinianoOX(datos, probCruceAGG, probMutacion, tamPoblacion, false, "B");
+  Geneticos ageBaldwinianoOX(datos, probCruceAGG, probMutacion, tamPoblacion, false, "L");
   ageBaldwinianoOX.AlgoritmoEstacionario(iteraciones, "OX");
 
-  // //////////////////////////////////////////////////////// GREEDY CONSTRUCTIVO
-  // Greedy greedy();
-  // greedy.GreedyConstructivo(datos);
-  // cout << "GREEDY" << endl;
-  // greedy.solucionGreedy.ImprimirCromosoma();
-  // for (int semilla=1; semilla<=semillaMax; semilla++) {
-  //   cout << endl << "semilla " << semilla << endl;
-  //   /////////////////////////////////////////////////////// BL
-  //   Cromosoma::SetSemilla(semilla);
-  //   BusquedaLocal buquedaL(datos);
-  //   buquedaL.BL(iteraciones);
-  //   cout << "BL" << endl;
-  //   buquedaL.solucionBL.ImprimirCromosoma();
-
-  //}
   return 0;
 }

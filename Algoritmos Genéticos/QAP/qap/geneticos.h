@@ -52,8 +52,10 @@ public:
     void MemeticoAGE(int iteracionesTotal, int generacionesBL,
       bool crucePosicion, string pLS);
 
-
+    /////////////////////////////////////////// VARIANTE BALDWINIANO
     void CalcularFitnessBaldwiniano(vector<Cromosoma> &pob);
+    /////////////////////////////////////////// VARIANTE LAMARCKIANO
+    void CalcularFitnessLamarckiano(vector<Cromosoma> &pob);
 };
 
 #endif
