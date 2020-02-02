@@ -190,7 +190,7 @@ void Geneticos::MutacionEstacionarios(vector<Cromosoma> &pob) {
 void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
   // Inicializamos a 0 el número de llamadas a la función objetivo.
   nIteraciones = 0;
-  int multiplicador = 2500;
+  //int multiplicador = 2500;
   int nIteracionesBL = 0;
   // Medir tiempo
   clock_t start,end;
@@ -256,12 +256,12 @@ void Geneticos::AlgoritmoGeneracional(int iteracionesTotal, string cruce) {
     }
     // Actualizamos la población
     poblacion = hijos;
-    //cout << "Mejor solución " << poblacion[0].fitness << " - Iteracion: " << nIteraciones << endl;
-    if (nIteraciones >= multiplicador) {
+    // Visualizar fitness
+    //if (nIteraciones >= multiplicador) {
       //cout << poblacion[0].fitness <<endl;
-      cout << nIteraciones << endl;
-      multiplicador += 2500;
-    }
+      //cout << nIteraciones << endl;
+      //multiplicador += 2500;
+    //}
   }
   end = clock();
   float tiempo = (end-start)/(double)CLOCKS_PER_SEC;
@@ -273,7 +273,7 @@ void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
   nIteraciones = 0;
   int padre1, padre2;
   Cromosoma hijo1, hijo2;
-  int multiplicador = 2500;
+  //int multiplicador = 2500;
   int nIteracionesBL = 0;
   // Medir tiempo
   clock_t start,end;
@@ -319,12 +319,12 @@ void Geneticos::AlgoritmoEstacionario(int iteracionesTotal, string cruce) {
     OrdenarPoblacion(hijos);
     poblacion[poblacion.size()-1] = hijos[0];
     poblacion[poblacion.size()-2] = hijos[1];
-
-    if (nIteraciones >= multiplicador) {
+    // Visualizar fitness
+    //if (nIteraciones >= multiplicador) {
       //cout << poblacion[0].fitness <<endl;
-      cout << nIteraciones << endl;
-      multiplicador += 2500;
-    }
+      //cout << nIteraciones << endl;
+      //multiplicador += 2500;
+    //}
   }
   end = clock();
   float tiempo = (end-start)/(double)CLOCKS_PER_SEC;
@@ -433,6 +433,7 @@ void Geneticos::MemeticoAGG(int iteracionesTotal, int generacionesBL,
     }
     // Actualizamos la población
     poblacion = hijos;
+    // Visualizar fitness
     //if (nIteraciones >= multiplicador) {
       //cout << poblacion[0].fitness <<endl;
       //cout << nIteraciones << endl;
@@ -546,6 +547,7 @@ void Geneticos::MemeticoAGE(int iteracionesTotal, int generacionesBL,
     }
     // Actualizamos la población
     poblacion = hijos;
+    // Visualizar fitness
     //if (nIteraciones >= multiplicador) {
       //cout << poblacion[0].fitness <<endl;
       //cout << nIteraciones << endl;
