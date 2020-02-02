@@ -1,0 +1,8 @@
+Para ejecutar el programa basta con situarse en el directorio /QAP y ejecutar el siguiente comando:
+./bin/qap ./datos/<nombre del fichero de datos>
+
+Por defecto tiene establecida la semilla a 33, pero se le puede pasar como argumento de esta forma:
+./bin/qap ./datos/<nombre del fichero de datos> <semilla>
+
+Para compilar de nuevo los ficheros basta con ejecutar make.
+Y para realizar una compilación limpia desde cero, primer debemos ejecutar make clean.
